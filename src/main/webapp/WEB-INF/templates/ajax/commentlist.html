@@ -1,0 +1,22 @@
+
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+<div id="comment-list" th:fragment="comment-list">
+  <div th:each="comm : ${comments}">
+    <div class="commitem-header" style="min-width:98%">
+    	<span th:inline="text">[[${comm.author}]] </span>
+    	<a th:if="${login} == ${comm.account}" style="margin-left:30px" href="#" th:onclick="'return onEditCommentItemClick(event,' + ${comm.id} + ');'">编辑</a>
+    	<a th:if="${login} == ${comm.account}" style="margin-left:10px" href="#" th:onclick="'return onDelCommentItemClick(' + ${comm.id} + ',' +${comm.did} + ');'">删除</a>
+     	<span style="margin-right:30%; float:right">发表于 [[${comm.cdateStr}]]</span>
+    </div>
+    <div style="margin-left:20px">
+    	<a class="editable-item" href="#" th:id="'dc-' + ${comm.id}" data-type="textarea" data-name="text"
+          th:data-pk=${comm.id}  th:utext="${comm.text}" onclick="return false"></a>
+    </div>
+  </div>
+</div>
+</body>
+
+</html>

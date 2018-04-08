@@ -1,0 +1,229 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.prajna</groupId>
+  <artifactId>prajna</artifactId>
+  <packaging>war</packaging>
+  <version>0.6</version>
+  <name>prajna doc</name>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>2.8.2</version>
+    </dependency>
+          
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.8.2</version>
+    </dependency>
+  
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+       <groupId>javax.servlet</groupId>
+       <artifactId>jsp-api</artifactId>
+       <version>2.0</version>
+       <scope>provided</scope>
+     </dependency>
+  
+     <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-core</artifactId>
+       <version>4.3.5.RELEASE</version>
+     </dependency>
+
+     <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-context</artifactId>
+       <version>4.3.5.RELEASE</version>
+     </dependency>
+
+     <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-jdbc</artifactId>
+       <version>4.3.5.RELEASE</version>
+     </dependency>
+
+     <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-orm</artifactId>
+       <version>4.3.5.RELEASE</version>
+     </dependency>
+
+     <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-tx</artifactId>
+       <version>4.3.5.RELEASE</version>
+     </dependency>
+
+     <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-web</artifactId>
+       <version>4.3.5.RELEASE</version>
+     </dependency>
+
+     <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-webmvc</artifactId>
+       <version>4.3.5.RELEASE</version>
+     </dependency>
+
+     <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-beans</artifactId>
+       <version>4.3.5.RELEASE</version>
+     </dependency>
+
+     <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-test</artifactId>
+       <version>4.3.5.RELEASE</version>
+       <scope>test</scope>
+     </dependency>
+
+     <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-context-support</artifactId>
+       <version>4.3.5.RELEASE</version>
+     </dependency>
+
+     <dependency>
+       <groupId>org.springframework.data</groupId>
+       <artifactId>spring-data-jpa</artifactId>
+       <version>1.11.3.RELEASE</version>
+     </dependency>
+
+     <dependency>
+       <groupId>org.springframework.data</groupId>
+       <artifactId>spring-data-commons</artifactId>
+       <version>1.13.3.RELEASE</version>
+     </dependency>
+<!--  
+     <dependency>
+       <groupId>org.springframework.data</groupId>
+       <artifactId>spring-data-rest-webmvc</artifactId>
+       <version>2.6.3.RELEASE</version>
+     </dependency>
+-->
+     <dependency>
+       <groupId>com.fasterxml.jackson.core</groupId>
+       <artifactId>jackson-databind</artifactId>
+       <version>2.8.8</version>
+     </dependency>
+
+     <dependency>
+       <groupId>com.h2database</groupId>
+       <artifactId>h2</artifactId>
+       <version>1.4.195</version>
+     </dependency>
+
+     <dependency>
+       <groupId>org.hibernate.javax.persistence</groupId>
+       <artifactId>hibernate-jpa-2.1-api</artifactId>
+       <version>1.0.0.Final</version>
+     </dependency>
+
+     <dependency>
+       <groupId>org.hibernate</groupId>
+       <artifactId>hibernate-entitymanager</artifactId>
+       <version>5.1.7.Final</version>
+     </dependency>
+
+     <dependency>
+       <groupId>commons-dbcp</groupId>
+       <artifactId>commons-dbcp</artifactId>
+       <version>1.4</version>
+     </dependency>     
+
+     <dependency>
+       <groupId>org.thymeleaf</groupId>
+       <artifactId>thymeleaf-spring4</artifactId>
+       <version>3.0.6.RELEASE</version>
+     </dependency>
+
+	<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+	<dependency>
+    	<groupId>commons-io</groupId>
+    	<artifactId>commons-io</artifactId>
+    	<version>2.5</version>
+	</dependency>
+
+	<dependency>
+    	<groupId>org.jsoup</groupId>
+    	<artifactId>jsoup</artifactId>
+    	<version>1.10.3</version>
+	</dependency>
+
+	<dependency>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>javax.mail</artifactId>
+      <version>1.6.0</version>
+	</dependency>
+
+  </dependencies>
+  
+  <build>
+    <finalName>prajna</finalName>
+            <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+    			<artifactId>jetty-maven-plugin</artifactId>
+    			<version>9.3.0.M2</version>
+                <configuration>
+                    <stopKey>CTRL+C</stopKey>
+                    <stopPort>8999</stopPort>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>xwork.loggerFactory</name>
+                            <value>com.opensymphony.xwork2.util.logging.log4j2.Log4j2LoggerFactory</value>
+                            
+                            <name>org.eclipse.jetty.server.Request.maxFormContentSize</name>
+                        	<value>104857600</value>
+                        </systemProperty>
+                    </systemProperties>
+                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <webAppSourceDirectory>${basedir}/src/main/webapp/</webAppSourceDirectory>
+                    <webAppConfig>
+                        <descriptor>${basedir}/src/main/webapp/WEB-INF/web.xml</descriptor>
+                    </webAppConfig>
+                </configuration>
+            </plugin>
+            
+            <plugin>
+            	<groupId>org.apache.maven.plugins</groupId>
+            	<artifactId>maven-surefire-plugin</artifactId>
+            	<version>2.12.4</version>
+            	<configuration>
+            	<skipTests>true</skipTests>
+                <additionalClasspathElements>
+                    <additionalClasspathElement>${basedir}/src/main/resources</additionalClasspathElement>
+                </additionalClasspathElements>      
+            	</configuration>
+            </plugin>
+        </plugins>
+  </build>
+</project>

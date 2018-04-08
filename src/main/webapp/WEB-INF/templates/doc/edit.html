@@ -1,0 +1,130 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common :: header(~{::link}, ~{::style}, ~{::script})">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/easyui/themes/icon.css}"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/easyui/themes/color.css}"/>
+  
+  <script type="text/javascript" th:src="@{/js/jquery.easyui.min.js}"></script> 
+  <script type="text/javascript" th:src="@{/ckeditor/ckeditor.js}"></script> 
+  
+  <style type="text/css">
+  	html {
+  		width:100%;
+  		height:100%;
+  	}
+  	body {
+  		width:100%;
+  		height:100%;
+  		margin:0;
+  		font-family:Arial,Verdana,sans-serif;
+  		font-size:16px;
+  	}
+  	form {
+  	 	width:100%;
+  		height:92%;
+  		margin:0;
+  	}
+  
+  	#div-title {
+  		width:78%;
+  		height:7%;
+  		padding-top:2%;
+  		/*padding-left:50px;*/
+  		margin:auto;
+  	}
+
+  	#div-content {
+  	 	width:65%;
+  		height:75%;
+  		margin: auto;
+  		/*align:center;*/
+  		/*display:inline-block"*/
+  		/*padding:30px 20px 20px 20px;*/
+  	}
+  </style>
+     
+</head>
+
+<body>
+  <form id="doc-editor" th:action="@{/doc/{docId}(docId=${docId})}" th:object="${draftBean}"  method="post">
+  <div id=div-title>
+  	<label>标题</label>
+  	<input type="text" th:field="*{title}" style="width:30%"/>
+  	<label th:if="${isAdmin}" style="padding-left:20px">置顶</label>
+  	<input th:if="${isAdmin}" type="checkbox" th:field="*{onTop}" />
+  	<label style="padding-left:20px">选择分类</label>
+  	<select th:field="*{cid}">
+  		<option th:each="ct : ${allCatetorys}"
+  			th:value="${ct.id}"
+  			th:text="${ct.name}"/>
+  	</select>
+  	<label style="padding-left:20px">转载</label>
+  	<input type="checkbox" th:field="*{repost}"/>
+  	<label style="padding-left:20px">文档网站</label>
+  	<input type="text" style="width:168px" placeholder="128个字符" th:field="*{url}" />
+  	<label th:if="${isAdmin}" style="padding-left:20px">作者</label>
+  	<input th:if="${isAdmin}" type="text" th:field="*{author}" placeholder="姓名 Or 帐号" style="width:102px"/>
+  	<input type="hidden" th:field="*{id}" />
+  	<input type="hidden" th:field="*{did}" />
+  	<input type="hidden" th:field="*{resid}" />
+  	<input type="hidden" th:field="*{account}"/>
+  </div>
+
+  <div id="div-content">
+  	<textarea id="editor"  th:field=*{text}></textarea>
+  
+  	<div style="padding-top:20px">
+  		<button type="submit" name="action" value="publish" style="margin-left:50px">发表文章</button>
+  		<button type="button" th:onclick="'javascript:onSaveClick(' + ${docId} + ')'" style="margin-left:50px">保存草稿</button>
+  		<button type="submit" name="action" value="clear" style="margin-left:50px">删除草稿</button>
+  		<span id="message" style="margin-left:100px;color:read"></span>
+  	</div>
+  </div>
+  </form>
+  
+  <script type="text/javascript" th:inline="javascript">
+  	var editor = CKEDITOR.replace('editor', {
+  		height: '69vh',
+  		image2_alignClasses: [ 'image-align-left', 'image-align-center', 'image-align-right' ],
+  		imageUploadUrl: [[@{/uploader/upload?type=Images}]],
+  		customConfig: [[@{/ckeditor/edit-config.js}]]
+  	});
+  	editor.on('fileUploadRequest', function(evt) {
+  		//evt.data.requestData.resid = $("input#resid").val();
+  		evt.data.requestData.draftid = $("input#id").val();
+  	});
+  	/*editor.on('fileUploadResponse', function(evt) {
+  	    var response = evt.data.fileLoader.xhr.responseText.split( '|' );
+  	    if (! response[1] ) {
+  	    	var obj = jQuery.parseJSON(response[0]);
+  	    	$("input#resid").val(obj.resid);
+  	    }
+  	});*/
+  
+  	function onSaveClick(docId) {
+  		var editorData = CKEDITOR.instances.editor.getData();
+  		var postData = $('#doc-editor').serializeArray();
+  		postData.find(item => item.name === 'text').value = editorData;
+  		//console.log(postData);
+  		//form_data = form_data.replace("dataStr=", "dataStr=" + data);
+  		$.ajax({
+              type: "POST",
+              url: [[@{/draft}]],
+              data:  postData,
+              success: function(response) {
+              	if (response == "success") {
+              		$("#message").html("保存成功").css('color', 'red');
+              	} else {
+              		$("#message").html("请先登录帐号").css('color', 'red');
+              	}
+              	setTimeout(messageDone, 5000);
+              }
+          });
+  	}
+  	
+  	function messageDone() {
+  		$('#message').html('');
+      }
+  </script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common :: header(~{::link}, ~{::style}, ~{::script})">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/easyui/themes/icon.css}"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/easyui/themes/color.css}"/>
+  
+  <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.easyui.min.js}"></script>
+  
+  <style type="text/css">
+  	body{
+  		height:100%;
+  		width:100%;
+  		display: flex; 
+  		align-items: center; 
+  		justify-content: center;
+  		font-size:12px;
+  	}
+  
+  	a {
+  		font-size:14px;
+  	}
+  
+  	#register {
+  		/*margin:0 auto;*/
+  		padding:1em  2em 0 2em;
+  		/*border:solid 2px #b7ddf2;*/
+  		/*background:#ebf4fb;*/
+  	}
+  
+  	#register label {
+  		/*display:block;*/
+  		/*font-weight:bold;*/
+  		/*text-align:right;*/
+  		/*float:left;*/
+  	}
+  
+  	.tbl-left-padded td:nth-child(2){ padding-left: 28px;}
+  	.tbl-left-padded td:nth-child(3) { padding-left: 28px;}
+  
+  </style> 
+</head>
+
+<body>
+  <div id="tt" class="easyui-tabs" style="width:780px;height:320px; transform: translateY(-50%);" data-options="tabPosition:'left',narrow:true">
+    <div title="新用户注册" style="padding:10px">
+	  <form id="register" th:action="@{/signup}" th:object="${usr}" method="post" onsubmit="return onSubmitForm(this)">
+        <table class="tbl-left-padded">
+		<tr>
+		  <td align="right">邮箱:</td>
+		  <td align="left"><input type="text" th:field="*{account}"/></td>
+		  <td align="left">*必填*:作为登录帐户名</td>
+		</tr>
+		<tr>
+		  <td align="right">昵称:</td>
+		  <td align="left"><input type="text" th:field="*{nickName}"/></td>
+		  <td align="left">姓名或者昵称</td>
+		</tr>
+		<tr>
+		  <td align="right">密码:</td>
+		  <td align="left"><input type="password" th:field="*{password}" /></td>
+		  <td align="left">字母和数字组合</td>
+		</tr>
+		<tr>
+		  <td align="right">确认密码:</td>
+		  <td align="left"><input type="password" id="confirmpass" name="confirmpass"/></td>
+		  <td><span id="pwd-message"></span></td>
+		</tr>
+		<tr>
+		  <td><br/></td>
+		  <td><br/></td>
+		  <td><br/></td>
+		</tr>
+		<tr>
+		  <td><br/></td>
+		  <td align="right"><input type="submit" value="提交" /></td>
+		</tr>
+		<tr>
+		  <td colspan="3"> <span id="reg-error" th:text="${err}" style="color:red"> </span> </td>
+		</tr>
+		</table>
+		<br/>
+	   </form>
+     </div>
+
+	 <div title="密码重置" style="padding:10px">
+       <form th:action="@{/signin/reset-password}" method="get" style="margin:60px 0 0 30px">
+         <label>输入邮箱帐号:</label>
+         <input type="text" name="account" th:value="${account}" style="margin:20px"/> <span th:text="${err}" style="color:red"> </span>
+         <p style="margin:20px 0 20px 0">点击”找回“按钮，密码会重置，并发送到您的邮箱</p>
+         <input type="submit" value="找回" style="margin-left:180px" />
+       </form>
+     </div>
+
+    </div>
+
+	<script type="text/javascript" th:inline="javascript">
+		$(document).ready(function() {
+			$('#confirmpass').on("keyup", function () {
+  				if ($('#password').val() == $('#confirmpass').val()) {
+    				$('#pwd-message').html('匹配').css('color', 'green');
+ 				} else 
+    				$('#pwd-message').html('不匹配').css('color', 'red');
+			});
+			
+			$('#confirmpass').on("keyup", function () {
+  				if ($('#password').val() == $('#confirmpass').val()) {
+    				$('#pwd-message').html('匹配').css('color', 'green');
+ 				} else 
+    				$('#pwd-message').html('不匹配').css('color', 'red');
+			});
+			
+			$('#account').on("keyup", function () {
+				$('#reg-error').html('');
+			});
+
+			/*for (var i=0; i<3; i++)
+				$('#tt').tabs('disableTab', i);*/
+
+			//var tabindex = [[${tabinx}]];
+			//$('#tt').tabs('enableTab', [[${tabinx}]]);
+			$('#tt').tabs('select', [[${tabinx}]]);
+		});
+		
+        function submitForm(){
+            $('#register').form('submit');
+        }
+        
+        function onSubmitForm(frm) {
+		    var reEmail=/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/;
+		    if (reEmail.test(frm.account.value) != true) {
+				var result = /^[a-zA-Z0-9_]{1,20}$/i.exec(frm.account.value);
+				if (result == null) {
+					$('#reg-error').html('帐号名包含无效字符');
+					return false;
+				}
+		    }
+
+		    if($("#password").val() != $("#confirmpass").val()) {
+				$('#pwd-message').html('不匹配').css('color', 'red');
+			    return false;
+			}
+		}
+        
+        function onSubmitForm1(frm) {
+		    var reEmail=/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/;
+		    if (reEmail.test(frm.account.value) != true) {
+				var result = /^[a-zA-Z0-9_]{1,20}$/i.exec(frm.account.value);
+				if (result == null) {
+					$('#reg-error').html('帐号名包含无效字符');
+					return false;
+				}
+		    }
+			if($("#password").val() != $("#confirmpass").val()) {
+				$('#pwd-message').html('不匹配').css('color', 'red');
+			    return false;
+			}
+		}
+	</script>
+</body>
+</html>

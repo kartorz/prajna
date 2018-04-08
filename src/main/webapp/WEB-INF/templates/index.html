@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common :: header(~{}, ~{::style}, ~{::script})">
+  <meta name="keywords" content="般若-程序蝉 LINUX 编程"/>
+  <meta name="Description" content="般若-程序蝉 程序设计博客网站"/>
+
+  <script type="text/javascript" th:src="@{js/jquery.easyui.min.js}"></script> 
+  
+  <style type="text/css">
+  	#pg_left {
+  		float:left;
+  		border:1px;
+  		width:23%;
+  		/*background:#FF0000;*/
+  		height:90%;
+  	}
+  	#pg_center {
+  		display: inline-block;
+  		width:50%;
+  		height:90%;
+  		/*background:#FFFFFF;*/
+  		/*position:relative;*/
+  		/*margin-left:20px;*/
+  	}
+   	#pg_right {
+  		float:right;
+  		width:25%;
+  		height:90%;
+  		/*background:#0888F0;*/
+  		/*margin-left: 40px;*/
+  	}
+  	#doclist-pgination-bar {
+  		/*position:absolute;
+  		bottom:0;*/
+  		width:auto;
+  		margin-top:20px;
+  	}
+  </style>
+</head>
+
+<body>
+  <ul th:replace="common :: nav"></ul>
+  
+  <div id="pg_left">
+  <!-- 
+  	<div style="margin:40px 0;"></div>
+  	<ul id="left-menu" class="easyui-tree" style="width:50%" th:attr="data-options='url:\'' + @{/menutree}  + '\',method:\'get\''"></ul>
+  -->
+  </div>
+  
+  <div id="pg_center">
+  	<div th:replace="ajax/doclist :: doc-list"> </div>
+  	
+  	<div th:if="${commentPgMeta}" id="doclist-pgination-bar" class="easyui-panel">
+  		<div id="doclist-pgination" class="easyui-pagination" th:attr="data-options=${pgmeta}"></div>
+  	</div>
+  </div>
+  <div id="pg_right">
+  </div>
+
+  <div th:replace="common :: footer"> </div>
+
+  <div th:replace="common :: signin-dialog"> </div>
+
+  <script>
+  	/*$('#left-menu').tree({
+  		onClick: function(node){
+  			var opts= $('#doclist-pgination').pagination('options');
+  	        $.ajax({
+  	            type: "GET",
+  	            url: "doc/list/" + node.id + "?p=0&s=" + opts.pageSize + "&sort=mdate,desc",
+  	            success: function(response) {
+  	                $("#doc-list").html( response );
+  	            }
+  	        });
+  		}
+  	});*/
+  	
+  	$('#doclist-pgination').pagination({
+  		onSelectPage:function(pageNumber, pageSize){
+  			var opts= $('#doclist-pgination').pagination('options');
+  			$.ajax({
+  	            type: "GET",
+  	            url: "doc/list/" + opts.cid + "?p=" + pageNumber + "&s=" + pageSize + "&sort=mdate,desc",
+  	            success: function(response) {
+  	                $("#doc-list").html( response );
+  	            }
+  	        });
+  		}
+  	});
+  </script>
+</body>
+</html>

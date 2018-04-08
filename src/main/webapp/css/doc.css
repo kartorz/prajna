@@ -1,0 +1,48 @@
+/* doc style.
+ * 
+ *   --------------------
+ *   |   | title    |   |
+ *   | L | content  | R |
+ *   |   |          |   |
+ *   --------------------
+ */
+
+div#doc {
+	width:100%;
+	min-height:93%;
+	display:table;
+}
+	
+div#doc .gapcel {
+	width:20%;
+	display: table-cell;
+}
+
+div#doc #center {
+	background-color: #C7EDCC;
+	display: table-cell;
+	width:60%;
+}
+	
+div#doc #content {	
+	padding:2% 4% 2% 4%;
+	/*margin: 0 auto;*/
+}
+
+div#doc #header ul  {
+	float:right;
+	margin:0;
+	marge-top:40px
+	margin-right:40px;
+    padding:0;
+    list-style:none;
+    text-align:center; 
+}
+
+div#doc #header ul li {
+	display:inline;
+	padding-top:2%;
+	padding-left:20px;
+	margin:auto;
+}
+

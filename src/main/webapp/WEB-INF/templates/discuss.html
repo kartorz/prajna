@@ -1,0 +1,114 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common :: header(~{::link}, ~{::style}, ~{::script})">
+	<link rel="stylesheet" type="text/css" th:href="@{css/easyui/themes/icon.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{css/easyui/themes/color.css}"/>
+
+	<script type="text/javascript" th:src="@{js/jquery.easyui.min.js}"></script>
+ 	
+ 	<style type="text/css">
+ 		#pg_left {
+ 		    margin-top:60px;
+ 			float:left;
+ 			border:1px;
+ 			width:15%;
+ 			/*background:#FF0000;*/
+ 			height:90%;
+ 		}
+
+ 		#pg_center {
+ 			display: inline-block;
+ 			width:50%;
+ 			height:90%;
+ 			/*background:#00FFF0;*/
+ 			position:relative;
+ 			margin-left:20px;
+ 		}
+ 	 	#pg_right {
+ 			float:right;
+ 			width:20%;
+ 			height:90%;
+ 			/*background:#0888F0;*/
+ 			margin-left: 40px;
+ 		}
+ 		#pgination-bar {
+ 			/*position:absolute;
+ 			bottom:0;*/
+ 			width:auto;
+ 			margin-top:20px;
+ 		}
+ 	</style>
+</head>
+
+<body>
+	<ul th:replace="common :: nav"></ul>
+
+	<div id="pg_left">
+		<div th:replace="ajax/taglist :: tag-list"></div>
+    </div>
+
+	<div id="pg_center">
+	    <div id="pgination-bar" class="easyui-panel">
+    		<div id="quslist-pgination" class="easyui-pagination" th:attr="data-options=${pgmeta}"></div>
+    	</div>
+		<div th:replace="ajax/questionlist :: question-list"> </div>
+	</div>
+
+	<div id="pg_right">
+		<div align="center" style="padding:40px 0 0 0">
+			<button type="button"  onclick="onQuestionButtonClick(0)">提问</button>
+		</div>
+	</div>
+
+	<div id="qstn-editor" > </div>
+    	
+	<div th:replace="common :: signin-dialog"> </div>
+
+    <script type="text/javascript" th:inline="javascript">
+    
+		$('#quslist-pgination').pagination({
+			onSelectPage:function(pageNumber, pageSize){
+				$.ajax({
+	            	type: "GET",
+	            	url: "questions?p=" + pageNumber + "&s=" + pageSize + "&sort=cdate,desc",
+	            	success: function(response) {
+	                	$("#question-list").html( response );
+	            	}
+	        	});
+			}
+		});    
+    	
+		function onTagClick(e, tag) {
+    		var opts= $(e).linkbutton('options');
+    		if (opts.selected)
+    			e.linkbutton('unselect');
+    		else
+    			e.linkbutton('select');
+
+    		$.ajax({
+                type: "PUT",
+                url: [[@{/tag}]] + "/" + tag + "?selected=" + opts.selected,
+                success: function(response) {
+                  	window.location.href = [[@{/}]] + response;
+                }
+         	});
+    	}
+    	
+        function onQuestionButtonClick(id) {
+        	$('#qstn-editor').dialog({
+        	    title: "提问",
+        	    width: 700,
+        	    height: 340,
+        	    closed: false,
+        	    cache: false,
+        	    href: [[@{/question-editor}]] + "/" + id,
+        	    modal: true
+        	});
+        	//var url = [[@{/question-editor}]] + "/" + id;
+        	//$('#dd').dialog('refresh', url);
+        }
+        
+	</script>
+
+</body>
+</html>

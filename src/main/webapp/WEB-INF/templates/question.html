@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common :: header(~{::link}, ~{::style}, ~{::script})">
+	<link rel="stylesheet" type="text/css" th:href="@{/jqueryui-editable/css/jqueryui-editable.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/jquery-ui/jquery-ui.min.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/easyui/themes/icon.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/easyui/themes/color.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/doc.css}"/>
+
+	<script type="text/javascript" th:src="@{/jquery-ui/jquery-ui.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.easyui.min.js}"></script>
+    <script type="text/javascript" th:src="@{/jqueryui-editable/js/jqueryui-editable.min.js}"></script>
+
+ 	<style type="text/css">
+		.editable-buttons { display: block;}
+		.mytextarea {width: 918px;}
+ 	</style>
+</head>
+
+<body>
+	<ul th:replace="common :: nav"></ul>
+
+	<div id='doc' th:object="${qstnBean}">
+	
+		<div class="gapcel"> </div> 
+	
+		<div id='center'>
+			<div id="content">
+				<div id="header">
+			      <label th:text="*{title}" style="width:50%;font-size:32px">标题</label>
+				  <ul>
+				  <li><a th:if="${login} == *{account}" href="#" th:onclick="'onEditQustionClick(' + *{qid} + ');'">编辑</a></li>
+				  <li><a th:if="${login} == *{account}" style="padding-left:20px" href="#" th:onclick="'onDelQustionClick(' + *{qid} + ');'">删除</a></li>
+				  </ul>
+				  <div> <input class="easyui-tagbox" th:value=*{tags} data-options="readonly:true"></div>
+				</div>
+
+				<div style="margin-top:20px" th:utext = *{text}></div>
+				
+				<div style="margin-top:50px; min-height:40px; padding:0 0 0 12px">
+				  <div th:replace="ajax/commentlist :: comment-list"> </div>
+				  <div th:if="${commentPgMeta}" style="margin:20px 5px 0 5px; background:#efefef" id="commtlist-pgination" 
+				  		class="easyui-pagination" th:attr="data-options=${commentPgMeta}"></div>
+				</div>
+			</div>
+
+			<div style="margin:50px 0 20px 0">
+			  <span class='divide' style="display:block">我的答案:</span>
+			  <div style="margin:12px 0 80px 98px; display: block">
+				<textarea id='commt-text' class='mytextarea' rows="9"></textarea>
+				<button style="margin-top:12px;display:block" type="button" th:onclick="'onCommitAnswerClick(' + *{qid} + ');'">提交</button>
+			  </div>
+		  </div>
+		</div>
+	
+		<div class="gapcel">
+		  <div align="center">
+		  	<h2>邀请他回答</h2>
+		    <input id='invitee' type="text">
+  		    <button style="margin-left:8px;" type="button" th:onclick="'onInviteClick(' + *{qid} + ');'">邀请</button>
+  		  </div>
+		  
+		  <div th:replace="ajax/invitee :: invitee-list"> </div>
+	
+		</div>
+		
+	</div>
+
+	<div id="qstn-editor" > </div>
+	<div th:replace="common :: signin-dialog"> </div>
+
+	<script type="text/javascript" th:inline="javascript">
+		$.fn.editable.defaults.mode = 'inline';
+		$.fn.editable.defaults.ajaxOptions = {type: "PUT"};
+		$.fn.editable.defaults.toggle = 'manual';
+		$.fn.editable.defaults.inputclass = "mytextarea";
+		$.fn.editable.defaults.url = [[@{/answer}]];
+		$.fn.editable.defaults.unescape = true;
+		$.fn.editable.defaults.rows = 9; 
+		//$.fn.editable.defaults.display = editableDisplay;
+
+		setupCommtlistPagination([[@{/answers}]]);
+
+		/*function editableDisplay(value, sourceData) {
+			alert(value);
+		}*/
+
+        function onEditQustionClick(id) {
+        	$('#qstn-editor').dialog({
+        	    title: "提问",
+        	    width: 700,
+        	    height: 300,
+        	    closed: false,
+        	    cache: false,
+        	    href: [[@{/question-editor}]] + "/" + id,
+        	    modal: true
+        	});
+        }
+       
+        function onDelQustionClick(id) {
+			if (confirm('确认需要删除该吗?')) {
+				$.ajax({
+		            type: "DELETE",
+		            url: [[@{/question/}]] + id,
+		            success: function(response) {
+		            	window.location.href = [[@{/}]] + response;
+		            }
+		        });
+			}
+		}
+		
+		function onCommitAnswerClick(id) {
+			var postData = {commtText: $("#commt-text").val(), qid: id};
+			$.ajax({
+	            type: "POST",
+	            url: [[@{/answer}]],
+	            data: postData,
+	            success: function(response) {
+	            	$("#comment-list").html(response);
+	            	$("#commt-text").val('');
+	            	
+	            	if ($('#commtlist-pgination').length) {
+	            		var opts= $('#commtlist-pgination').pagination('options');
+	            		$('#commtlist-pgination').pagination('refresh',{
+	            			total: opts.total + 1,
+	            			pageNumber: 1
+	            		});
+	            	}
+	            },
+	            error: function(jqXHR, textStatus, errorThrown) {
+					alert(getErrMessage(parseInt(errorThrown)));
+				}
+	        });
+		}
+		
+		function onDelCommentItemClick(id, did) {
+			if (confirm('确认删除该回复吗?')) {
+            	var pageNumber = 1;
+				var total = 0;
+				if ($('#commtlist-pgination').length) {
+            		var opts = $('#commtlist-pgination').pagination('options');
+            		pageNumber = opts.pageNumber;
+            		total = opts.total;
+            		/*if (total % 10) {
+            			pageNumber -= 1;
+            		}*/
+				}
+
+				$.ajax({
+		            type: "DELETE",
+		            url: [[@{/answer/}]] + id + "?qid=" + did + "&p=" + pageNumber,
+		            success: function(response) {
+		            	$("#comment-list").html(response);
+					   	if (total > 0) {
+		            		$('#commtlist-pgination').pagination('refresh',{
+		            			total: total - 1
+		            		});
+		            	}
+		            }
+		        });
+			}
+			return false;
+		}
+		
+		function onInviteClick(id) {
+			var extra = {invitee: $("#invitee").val(), qid: id};
+			$.ajax({
+				type: "POST",
+	            url: [[@{/invitee}]],
+	            data: extra,
+	            success: function(response) {
+	            	$("#invitee-list").replaceWith(response);
+	            	//$("#invitee-list").removeClass().html(response);
+	            	$("#invitee").val('');
+	            },
+	            error: function(jqXHR, textStatus, errorThrown) {
+	            	$("#invitee").val('');
+	            	alert(getErrMessage(parseInt(errorThrown)));
+				}
+	        });
+		}
+	</script>
+
+
+</body>
+</html>

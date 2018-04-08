@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common :: header(~{}, ~{::style}, ~{})">
+  <style type="text/css">
+  </style>
+</head>
+
+<body>
+  <ul class="nav">
+    <li><a th:href="@{/}">主页</a></li>
+    <li><a th:href="@{/account/setting}">帐户管理</a></li>
+    <li><a th:href="@{/account/setting?tab=1}">删除帐户</a></li>
+  </ul>
+
+	<div id="pg_center">
+	
+	<div id="my-doc">
+	
+	</div>
+
+	<div id="my-history">
+	</div>
+	</div>
+</body>
+</html>

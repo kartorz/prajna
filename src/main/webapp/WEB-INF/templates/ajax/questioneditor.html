@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="qustn-editor" th:fragment="dialog" align="center" style="padding:2% 10% 0 10%">
+   	<form  method="post" th:object="${qstnBean}" th:action="@{/question/{id}(id=*{qid})}" onsubmit="return onSubmitEditor(this)">
+    	<div >
+        	<input id="editor-title" class="easyui-textbox" prompt="问题:" labelPosition="top" th:field="*{title}" style="width:100%;height:52px">
+        </div>
+        <div>
+        	<input id="editor-tags" class="easyui-tagbox"  th:field="*{tags}" style="width:100%" th:attr="data-options='
+                url:\'' + @{/tagjson} + '\',
+                method: \'get\',
+                valueField: \'text\',
+                textField: \'text\',
+                limitToList: true,
+                hasDownArrow: true,
+                editable: false,
+                prompt: \'亲，添加几个标签吧...\'
+                ' ">
+         </div>
+         <div>
+         	<textarea placeholder="补充说明，可以为空" th:field="*{text}" rows="3" style="width:100%"></textarea>
+         </div>
+         <div>
+            <input type="hidden" th:field="*{qid}" />
+            <input type="hidden" th:field="*{author}" />
+            <input type="hidden" th:field="*{account}" />
+        	<input type="submit" value="提交" />
+        </div>
+        <!-- <p id="editor-message"></p> -->
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div id= "question-list" th:fragment="question-list">
+  <div style="padding:12px" th:each="qus : ${questions}">
+    <a th:href="@{/question/{id}(id=${qus.qid})}" th:text="${qus.title}"> </a>
+    <div style="display:inline-block; float:right; margin: 0 12px 0 0;">
+    	<span style="margin-left:10px"th:text="${qus.author}"></span>
+    	<span th:text="${qus.cdate}"></span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div id="doc-list" th:fragment="doc-list">
+  <div th:each="doc : ${docs}" style="border-top:1px solid #F0F0F0">
+    <h3><a th:href="@{/doc/{id}(id=${doc.id})}" th:text="${doc.title}" style="color:#000"> </a></h3>
+    <div th:text="${doc.brief}"  style="padding:0 0 0 32px"></div>
+    <div class="doclist-meta">
+      <div></div>
+      <div>[[${doc.views}]] 次浏览</div>
+      <div>发表于 [[${doc.cdateStr}]]</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

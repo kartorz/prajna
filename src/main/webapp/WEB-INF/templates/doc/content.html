@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common :: header(~{::link}, ~{::style}, ~{::script})">
+  <link rel="stylesheet" type="text/css" th:href="@{/jqueryui-editable/css/jqueryui-editable.css}"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/jquery-ui/jquery-ui.min.css}"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/ckeditor/plugins/codesnippet/lib/highlight/styles/default.css}"/>
+
+  <script type="text/javascript" th:src="@{/jquery-ui/jquery-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/jqueryui-editable/js/jqueryui-editable.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.easyui.min.js}"></script> <!-- Must after jqueryui-editable.min -->
+  <script type="text/javascript" th:src="@{/ckeditor/plugins/codesnippet/lib/highlight/highlight.pack.js}"></script>
+ 	
+  <style type="text/css">
+    body {background:#f1f2f3;}
+    ul#nav {margin:0;}
+    div#docBean {
+      width:100%;
+      min-height:93%;
+      display:table;
+      margin-bottom:20px;
+      margin-top:1px;
+    }
+	
+	div.gapcel {
+	  width:19%;
+	  display: table-cell;
+	}
+	div#center {
+	  background-color: #FFFFFF;
+	  display: table-cell;
+	  width:62%;
+	  /*border: 2px solid #F0F0F0;*/
+	}
+	
+	div#content {
+	  padding:2% 4% 2% 4%;
+	  /*display:inline-block;*/
+	  /*float:left;*/
+	  /*margin: 0 auto;*/
+	}
+
+    div#title {
+      text-align:center;
+      padding-top:40px;
+    }
+
+	div#title ul  {
+	  float:right;
+	  margin:0;
+	  margin-right:40px;
+      padding:0;
+      list-style:none;
+	}
+
+	div#title ul li {
+	  display:inline;
+	  padding-top:2%;
+	  /*padding-left:50px;*/
+	  margin:auto;
+	}
+	.editable-buttons { display: block;}
+	.mytextarea {width: 618px;}
+  </style>
+</head>
+
+<body>
+  <!-- <div th:replace="common :: heading"></div>  -->
+  
+  <ul th:replace="common :: nav"></ul>
+
+  <div id='docBean' th:object="${docBean}">
+    <div class="gapcel"> </div> 
+	<div id='center'>
+      <div id="title">
+        <lable th:if="*{repost}">转载</lable>
+        <label th:text="*{title}" style="width:50%;font-size:32px">标题</label>
+        <ul>
+          <li><a th:if="${isOwner}" th:href="@{/doc/editor/{id}(id=*{id})}" style="padding-left:20px">编辑</a></li>
+      	  <li><a th:if="${isOwner}" href="#" th:onclick="'onDelDocClick(' + *{id} + ');'" style="padding-left:20px">删除</a></li>
+        </ul>
+      </div>
+      
+      <div th:if="*{repost}" style="margin-top:25px;margin-left:180px">
+        <label style="font-size:24px">原文地址：</label>
+        <label>[[*{url}]]</label>
+      </div>
+  
+      <div id="meta" th:if="*{repost} == false"  style="margin-top:25px;margin-left:180px">
+        <label>作者: [[*{author}]]</label>
+        <label th:if="*{url} != ''" style="margin-left:24px">网站: [[*{url}]]</label>
+      </div>
+
+      <div id="content" >
+        <div th:utext = *{text}></div>
+      </div>
+      
+      <!-- 
+      <div  style="text-align: center;">
+      		<button type="button" th:onclick="'onGradeClick(*{id}, 1);'">顶</button>
+      		<button type="button" th:onclick="'onGradeClick(*{id}, -1);'">踩</button>
+      </div>
+      -->
+      
+      <div style="margin-top:50px">
+      	<span class='divide' style="display:block">用户评论:</span>
+      	<div style="min-height:40px; padding:0 0 0 12px">
+      		<div th:replace="ajax/commentlist :: comment-list"> </div>
+      		<div th:if="${commentPgMeta}" style="margin:20px 5px 0 5px; background:#efefef" id="commtlist-pgination" 
+      				class="easyui-pagination" th:attr="data-options=${commentPgMeta}"></div>
+      	</div>
+      </div>
+      
+      <div style="margin:30px 0 20px 0">
+      	<span class='divide' style="display:block">发表评论: (限500字)</span>
+      	<div style="margin-top:12px; margin-left:25%; display: block">
+      		<textarea id='commt-text' class='mytextarea' rows="7"></textarea>
+      		<button style="margin-top:12px;display:block" type="button" th:onclick="'onCommitCommtClick(' + *{id} + ');'">提交</button>
+      	</div>
+      </div>
+    </div>
+  
+    <div class="gapcel"></div>
+  </div>
+
+  <div th:replace="common :: signin-dialog"> </div>
+  
+  <script type="text/javascript" th:inline="javascript">
+  	$.fn.editable.defaults.mode = 'inline';
+  	$.fn.editable.defaults.ajaxOptions = {type: "PUT"};
+  	$.fn.editable.defaults.toggle = 'manual';
+  	$.fn.editable.defaults.inputclass = "mytextarea";
+  	$.fn.editable.defaults.url = [[@{/doc/comment}]];
+  	$.fn.editable.defaults.unescape = true;
+ 
+  	hljs.initHighlightingOnLoad();
+  
+  	$('.editable-item').editable ({
+  		success: function (response, newValue) {
+  			if (response != "")
+  				return response;
+  	  	}
+  	});
+  
+  	$('#commtlist-pgination').pagination({
+      	onSelectPage:function(pageNumber, pageSize){
+      		var opts= $('#commtlist-pgination').pagination('options');
+      		$.ajax({
+      	            type: "GET",
+      	            url: [[@{/doc/comment}]] + "?did=" + opts.did + "&p=" + pageNumber + "&s=" + pageSize + "&sort=cdate,desc",
+      	            success: function(response) {
+      	                $("#comment-list").html(response);
+      	            }
+      	     });
+      	}
+    });
+  	function onDelDocClick(id) {
+  		if (confirm('确认删除该文档吗?')) {
+  			$.ajax({
+  	            type: "DELETE",
+  	            url: [[@{/doc/}]] + id,
+  	            success: function(response) {
+  	            	window.location.href = [[@{/}]] + response;
+  	            }
+  	        });
+  		}
+  	}
+  
+  	function onGradeClick(id, score) {
+  		console.log(id, score);
+  	}
+ 
+  	function onDelCommentItemClick(id, did) {
+  		var url = [[@{/doc/comment}]];
+  		doDelCommentItem(id, did, url);
+  		return false;
+  	}
+  	
+  	function onCommitCommtClick(id) {
+  		var url = [[@{/doc/comment}]];
+  		doCommitCommt(id, url);
+  	}
+  </script>
+
+
+</body>
+</html>

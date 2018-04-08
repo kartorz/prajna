@@ -1,0 +1,13 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <div class="left-list" id="invitee-list" th:fragment="invitee-list" >
+    <p><em> 已邀请 </em></p>
+    <div>
+   	  <div th:each="item : ${invitees}">
+  	    <p th:text=${item}></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

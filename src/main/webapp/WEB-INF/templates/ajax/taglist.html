@@ -1,0 +1,13 @@
+
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div id="tag-list" th:fragment="tag-list" align="center">
+  <div style="padding:12px" th:each="tagItem : ${tags}">
+    <a class="easyui-linkbutton" th:data-options="|selected:${tagItem.selected}|" th:onClick="|onTagClick($(this), '${tagItem.tag}')|" th:text="${tagItem.tag}"></a>
+  </div>
+</div>
+
+</body>
+</html>

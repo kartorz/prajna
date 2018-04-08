@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common :: header(~{}, ~{::style}, ~{::script})">
+  <script type="text/javascript" th:src="@{js/jquery.easyui.min.js}"></script>
+  
+  <style type="text/css">
+    a.big-btn{
+		height:36px;
+	}
+	a.big-btn span.l-btn-left{
+		padding-top:0;
+		padding-bottom:0;
+		height:36px;
+	}
+	a.big-btn span span.l-btn-text{
+		height:36px;
+		line-height:36px;
+		font-size:16px;
+		font-weight:bold;
+	}
+	a.big-btn .s-btn-downarrow,a.big-btn .m-btn-downarrow{
+		font-size:16px;
+		font-weight:bold;
+	}
+ 
+  	#pg_left {
+  		float:left;
+  		border:1px;
+  		width:15%;
+  		/*background:#FF0000;*/
+  		height:90%;
+  	}
+  
+  	#pg_center {
+  		display: inline-block;
+  		width:50%;
+  		height:90%;
+  		/*background:#00FFF0;*/
+  		position:relative;
+  		margin-left:20px;
+  	}
+   	#pg_right {
+  		float:right;
+  		width:20%;
+  		height:90%;
+  		/*background:#0888F0;*/
+  		margin-left: 40px;
+  	}
+  </style>
+</head>
+
+<body>
+  <h2 style="text-align:center">般若-程序禅 管理员界面</h2>
+  
+  <div class="easyui-panel" style="padding:5px;">
+    <a th:href="@{/}" class="easyui-linkbutton big-btn" data-options="plain:true">首页</a>
+    <a href="#" class="easyui-menubutton big-btn" data-options="menu:'#mm1'">文档管理</a>
+    <a href="#" class="easyui-menubutton big-btn" data-options="menu:'#mm2'">帐号维护</a>
+    <a href="#" class="easyui-menubutton big-btn" data-options="menu:'#mm3'">评论维护</a>
+  </div>
+  <div id="mm1" style="width:150px;">
+    <div><a th:href="@{/doc/editor/0}">写文档</a></div>
+    <div class="menu-sep"></div>
+    <div>文档库表</div>
+  </div>
+  <div id="mm2" style="width:100px;">
+  </div>
+ 
+  <div id="pg_left">
+  </div>
+  
+  <div id="pg_center">
+  </div>
+ 
+  <div id="pg_right">
+  </div>
+  
+  <script>
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common :: header(~{::link}, ~{::style}, ~{::script})">
+  <link rel="stylesheet" type="text/css" th:href="@{/jqueryui-editable/css/jqueryui-editable.css}"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/jquery-ui/jquery-ui.min.css}"/>
+
+  <script type="text/javascript" th:src="@{/jquery-ui/jquery-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/jqueryui-editable/js/jqueryui-editable.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/jquery.easyui.min.js}"></script> 
+
+  <style type="text/css">
+   body {background:#f1f2f3;}
+    div#doc {
+      width:100%;
+      min-height:93%;
+      display:table;
+      margin-bottom:20px;
+      margin-top:1px;
+    }
+
+	div.gapcel {
+	  width:19%;
+	  display: table-cell;
+	}
+	div#center {
+   	  background-color: #FFFFFF;
+	  display: table-cell;
+	  width:62%;
+	  border: 2px solid #F0F0F0;
+	}
+	
+	div#content {
+	  padding:2% 4% 2% 4%;
+	  /*display:inline-block;*/
+	  /*float:left;*/
+	  /*margin: 0 auto;*/
+	}
+
+    div#title {
+      text-align:center;
+      padding-top:40px;
+    }
+	
+    .editable-buttons { display: block;}
+	.mytextarea {width: 618px;}
+  </style>
+</head>
+
+<body>  
+  <ul th:replace="common :: nav"></ul>
+
+  <div id='doc'>
+    <div class="gapcel"> </div> 
+
+    <div id='center'>
+      <div id="title">
+        <label style="width:50%;font-size:32px">关于本站</label>
+      </div>
+
+      <div id="content" >
+        <div>
+        <p>般若-程序蝉 是一个交流学习程序设计的网站。作者工作了十来年，从嵌入式开始，经过linux的驱动和应用，到Android的框架和应用，以及WEB系统的和开源软件的开发，
+        一路走来，深感在大学和毕业早期，浪费了大量的时间，那个时候也是一直致力于代码编程，无奈天赋有限，迷茫期太长，又得不到高人的指点，一切都靠自己看书，看开源代码，敲代码，
+        等终于有一天发现自己摸到了点门道，可以做点东西的时候，然而，黄花菜早就凉了，社会的发展，技术的发展，超出我们的想像。</p>
+        <p>本网站立足于实践，秉持”授之以渔“的理念，深刻挖掘程序设计背后的一些知识点，科学地规划培训课程，让初学者可以早一点 走出“好像什么都不会”的迷惘，早日迈进程序设计的大门。
+        欢迎大家交流学习，提出宝贵意见。</p>
+        </div>
+      </div>
+
+      <div style="margin-top:50px">
+      	<span class='divide' style="display:block">用户留言:</span>
+      	<div style="min-height:40px; padding:0 0 0 12px">
+      		<div th:replace="ajax/commentlist :: comment-list"> </div>
+      		<div th:if="${commentPgMeta}" style="margin:20px 5px 0 5px; background:#efefef" id="commtlist-pgination" 
+      				class="easyui-pagination" th:attr="data-options=${commentPgMeta}"></div>
+      	</div>
+      </div>
+      
+      <div style="margin:30px 0 20px 0">
+      	<span class='divide' style="display:block">留言: (限500字)</span>
+      	<div style="margin-top:12px; margin-left:25%; display: block">
+      		<textarea id='commt-text' class='mytextarea' rows="7"></textarea>
+      		<button style="margin-top:12px;display:block" type="button" th:onclick="'onCommitMessageClick(' + *{id} + ');'">提交</button>
+      	</div>
+      </div>
+    </div>
+    <div class="gapcel"></div>
+  </div>
+
+  <div th:replace="common :: signin-dialog"> </div>
+  
+  <script type="text/javascript" th:inline="javascript">
+  	$.fn.editable.defaults.mode = 'inline';
+  	$.fn.editable.defaults.ajaxOptions = {type: "PUT"};
+  	$.fn.editable.defaults.toggle = 'manual';
+  	$.fn.editable.defaults.inputclass = "mytextarea";
+  	$.fn.editable.defaults.url = [[@{/about/message}]];
+  	$.fn.editable.defaults.unescape = true;
+ 
+  	setupCommtlistPagination([[@{/about/messages}]]);
+  
+  	$('.editable-item').editable ({
+  		success: function (response, newValue) {
+  		if (response != "")
+  			return response;
+  		}
+  	});
+  
+  	function onCommitMessageClick(id) {
+  		var url = [[@{/about/message}]];
+  		doCommitCommt(id, url);
+  	}
+
+  	function onDelCommentItemClick(id, did) {
+  		var url = [[@{/about/message}]];
+  		doDelCommentItem(id, did, url);
+  		return false;
+  	}
+  </script>
+</body>
+</html>
