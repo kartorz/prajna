@@ -153,7 +153,7 @@ create table if not exists QuestionAnswers(id int NOT NULL,
 				sreserve  varchar(48),
 				primary key	(id));
 
---drop table UserMessage if exists;
+--drop table UserMessages if exists;
 create table if not exists UserMessages(id int NOT NULL,
 				account     varchar(25),
 				author      varchar(25),

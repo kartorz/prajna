@@ -1,38 +1,28 @@
 package prajna.services;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.sql.Clob;
 import java.sql.Blob;
-import javax.sql.rowset.serial.SerialClob;
 import javax.sql.rowset.serial.SerialBlob;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.persistence.Transient;
 import javax.servlet.http.Part;
-
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.h2.jdbc.JdbcSQLException;
 import org.hibernate.exception.DataException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import prajna.SimpleImageInfo;
@@ -106,7 +96,7 @@ public class DocService {
 			Pageable page = new PageRequest(pg, DocService.PG_SIZE);
 			docList = docRepo.findAllByOrderByOnTopDescMdateDesc(page).getContent();
 		} else
-			docList = docRepo.findByCid(cid, new PageRequest(pg, PG_SIZE)).getContent();
+			docList = docRepo.findByCidOrderByMdateDesc(cid, new PageRequest(pg, PG_SIZE)).getContent();
 	
 		if (docList == null)
 			docList = new ArrayList<Doc>();

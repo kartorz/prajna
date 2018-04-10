@@ -19,7 +19,8 @@ public interface DocRepo  extends PagingAndSortingRepository<Doc, Integer> {
 	//@Query("SELECT d FROM Doc AS d ORDER BY d.onTop DESC, d.mdate DESC")
 	//Page<Doc> findAll(Pageable pageable);
 	Page<Doc> findAllByOrderByOnTopDescMdateDesc(Pageable pageable);
-	
+	Page<Doc> findByCidOrderByMdateDesc(int cid, Pageable pageable);
+
 
 	@Transactional
 	@Modifying

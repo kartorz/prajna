@@ -44,7 +44,7 @@ public class RootController extends BaseController {
     public String index(HttpServletRequest req, Model model,
     				@RequestParam(value="cid", defaultValue="1") int cid) {
 		//Pageable page = new PageRequest(0, DocService.PG_SIZE, Sort.Direction.DESC, "mdate");
-		model.addAttribute("pgmeta", docService.getPgMetaJson(Doc.CID_MAINPAGE));
+		model.addAttribute("pgmeta", docService.getPgMetaJson(cid));
         model.addAttribute("docs", docService.getDocList(cid, 0));
 
 		model.addAttribute("login", req.getSession().getAttribute("account"));

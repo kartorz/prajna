@@ -26,13 +26,14 @@
   <li><a th:href="@{/}"><img border="0" th:attr="src=@{/logo.png}" /></a></li>
   <li><a th:href="@{/}">首页</a></li>
   <li><a th:href="@{/?cid=2}">编程</a></li>
-	<li><a th:href="@{/?cid=3}">LINUX</a></li>
-	<li><a th:href="@{/?cid=4}">Android</a></li>
-    <!-- <li><a th:href="@{/discuss}">论道</a></li> -->
-    <li th:if="${login == null || login == ''}"><a href="javascript:void(0)" onClick="onSignInClick(this);">登录</a></li>
-    <li th:if="${login == null || login == ''}"></li>
-    <li th:if="${login != null && login != ''}"><a th:href="@{/signout}">退出</a></li>
-    <li th:if="${login != null && login != ''}"><a th:href="@{/account/info}" th:text="${login}"></a></li>
+  <li><a th:href="@{/?cid=3}">LINUX</a></li>
+  <li><a th:href="@{/?cid=4}">Android</a></li>
+  <!-- <li><a th:href="@{/discuss}">论道</a></li> -->
+  <li><a th:href="@{/about}">关于本站</a></li>
+  <li th:if="${login == null || login == ''}"><a href="javascript:void(0)" onClick="onSignInClick(this);">登录</a></li>
+  <li th:if="${login == null || login == ''}"><a th:href="@{/signup}">注册</a></li>
+  <li th:if="${login != null && login != ''}"><a th:href="@{/signout}">退出</a></li>
+  <li th:if="${login != null && login != ''}"><a th:href="@{/account/info}" th:text="${login}"></a></li>
 </ul>
 
 <div id="footer" th:fragment="footer" style="text-align:center; width:100%; margin-top:60px;">
@@ -48,10 +49,11 @@
 		<a style="color:#0028ff; margin-left:20px" th:href="@{/about}">站内留言</a>
 	  </p>
   </div>
- 
+  <!-- 
   <div style="display: inline-block; vertical-align: top;">
     <h3><a style="text-align:center; color:#0028ff" th:href="@{/about}">关于本站</a></h3>
   </div>
+  -->
 </div>
 
 <div th:fragment="signin-dialog" id="dlg-signin" class="easyui-dialog" title="登录" buttons="#dlg-signin-buttons" 

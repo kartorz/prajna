@@ -75,13 +75,9 @@ ul.nav label {
 
 /*ul#nav li a:hover { }*/
 
-ul#main-nav li:last-child {
- height:100%;
- float:right;
- margin-right: 2%;
-}
-
-ul#main-nav li:nth-last-child(2) {
+ul#main-nav li:last-child,
+ul#main-nav li:nth-last-child(2),
+ul#main-nav li:nth-last-child(3) {
  height:100%;
  float:right;
  margin-right: 2%;
