@@ -82,12 +82,16 @@ public class Question {
 	public void setCategory(String category) {
 		this.category = category;
 	}
+	public String getCdateStr() {
+		return cdateStr;
+	}
 	public Timestamp getCdate() {
 		return cdate;
 	}
 	
 	public void setCdate(Timestamp cdate) {
 		this.cdate = cdate;
+		cdateStr = new SimpleDateFormat("YYYY-MM-dd hh:mm").format(cdate);
 	}
 	
 	public String getTags() {
