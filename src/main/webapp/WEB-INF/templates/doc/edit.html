@@ -87,6 +87,7 @@
   		height: '69vh',
   		image2_alignClasses: [ 'image-align-left', 'image-align-center', 'image-align-right' ],
   		imageUploadUrl: [[@{/uploader/upload?type=Images}]],
+  		contentsCss : ["body {font-size: 16px;}"],
   		customConfig: [[@{/ckeditor/edit-config.js}]]
   	});
   	editor.on('fileUploadRequest', function(evt) {
