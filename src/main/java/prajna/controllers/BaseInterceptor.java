@@ -25,7 +25,8 @@ public class BaseInterceptor extends HandlerInterceptorAdapter {
 		}*/
 
 		if (request.getMethod() == "POST" || request.getMethod() == "PUT") {
-			return moderate(request, response);
+			if (!request.getRequestURI().startsWith("/uploader"))
+				return moderate(request, response);
 		}
 		return true;
 	}

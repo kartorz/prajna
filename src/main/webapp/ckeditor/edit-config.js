@@ -60,11 +60,12 @@ CKEDITOR.editorConfig = function( config ) {
 		showCharCount: true,
 		countSpacesAsChars: true,
 		countHTML: true,
-		maxCharCount: 10000,
+		maxCharCount: 1048500,
 		filter: new CKEDITOR.htmlParser.filter({
 			elements: {
 				img: function( element ) {
-					if (element.attributes.src.indexOf('data:image/png') === 0) {
+					//console.log(element.attributes.src);
+					if (element.attributes.src.indexOf('data:image/') === 0) {
 						return false;
 					}
 		        }
