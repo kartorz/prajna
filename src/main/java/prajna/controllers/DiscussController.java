@@ -41,7 +41,7 @@ public class DiscussController extends BaseController {
 	DiscussService discussService;
 
 	@RequestMapping("/discuss")
-    public String discuss(HttpServletRequest req, Model model, @CookieValue("JSESSIONID") String ssid) {
+    public String discuss(HttpServletRequest req, Model model, @CookieValue(value="JSESSIONID", defaultValue = "") String ssid) {
 		Pageable page = new PageRequest(0, SystemService.PG_SIZE, Sort.Direction.DESC, "cdate");
 		//model.addAttribute("pgmeta", docService.getPgMetaJson(1));
 	    model.addAttribute("tags", discussService.getMyTagList(sessionAccount(req), sessionClient(ssid)));
@@ -53,7 +53,7 @@ public class DiscussController extends BaseController {
     }
   
 	@RequestMapping( method=RequestMethod.GET, value="/questions")
-    public String getQuestionListView(HttpServletRequest req, Model model, Pageable page, @CookieValue("JSESSIONID") String ssid) {
+    public String getQuestionListView(HttpServletRequest req, Model model, Pageable page, @CookieValue(value="JSESSIONID", required = false) String ssid) {
 		Page<Question> qusPage = discussService.getQuestionPage(sessionAccount(req), sessionClient(ssid), page);
         model.addAttribute("questions", qusPage);
 
@@ -64,7 +64,6 @@ public class DiscussController extends BaseController {
     public String getQuestionEditor(HttpServletRequest req,
     							HttpServletResponse resp,
     							Model model,
-    							@CookieValue("JSESSIONID") String ssid,
     							@PathVariable("id") int qid ) {
 		String usr = sessionAccount(req);
 		if (usr.isEmpty()) {
@@ -77,9 +76,8 @@ public class DiscussController extends BaseController {
 	
 	@RequestMapping(value="/question/{id}", method = RequestMethod.GET)
     public String getQuestion(HttpServletRequest req,
-    							HttpServletResponse resp,
+    						  HttpServletResponse resp,
     						  Model model,
-    						  @CookieValue("JSESSIONID") String ssid,
     						  @PathVariable("id") int qid ) {
 		Question qstnBean = discussService.getQuestion(qid);
 		model.addAttribute("login", sessionAccount(req));
@@ -94,7 +92,6 @@ public class DiscussController extends BaseController {
     public String postQuestion(HttpServletRequest req,
     							HttpServletResponse resp,
 			  				   Model model,
-			  				   @CookieValue("JSESSIONID") String ssid,
 			  				   Question qstnBean,
 			  				   @PathVariable("id") int qid) {
 		String url;
@@ -119,7 +116,6 @@ public class DiscussController extends BaseController {
 	@ResponseBody
     public String deleteQuestion(HttpServletRequest req,HttpServletResponse resp,
     						  Model model,
-    						  @CookieValue("JSESSIONID") String ssid,
     						  @PathVariable("id") int qid ) {
 	
 		String usr = sessionAccount(req);
@@ -137,7 +133,6 @@ public class DiscussController extends BaseController {
     public String getAnswers(HttpServletRequest req,HttpServletResponse resp,
     							Model model,
     							Pageable page,
-    							@CookieValue("JSESSIONID") String ssid,
     							@RequestParam("did") int did) {
     	model.addAttribute("login",  sessionAccount(req));
         model.addAttribute("comments", discussService.getAnswers(did, page));
@@ -146,7 +141,6 @@ public class DiscussController extends BaseController {
     
     @RequestMapping(value="/answer/{id}", method = RequestMethod.DELETE)
     public String deleteAnswer(HttpServletRequest req,Model model,
-    								@CookieValue("JSESSIONID") String ssid,
     								@PathVariable("id") int id,
     								@RequestParam("qid") int qid,
     								@RequestParam("p") int p) {
@@ -163,7 +157,6 @@ public class DiscussController extends BaseController {
     @RequestMapping(value="/answer", method = RequestMethod.PUT)
     public void putAnswer(HttpServletRequest req,HttpServletResponse resp,
     							Model model,
-    							@CookieValue("JSESSIONID") String ssid,
     							@RequestParam("pk") int id,
     							@RequestParam("name") String col,
     							@RequestParam("value") String text) throws IOException{
@@ -179,7 +172,6 @@ public class DiscussController extends BaseController {
     @RequestMapping(value="/answer", method = RequestMethod.POST)
     public String postAnswer(HttpServletRequest req,HttpServletResponse resp,
     							Model model,
-    							@CookieValue("JSESSIONID") String ssid,
     							@RequestParam("qid") int qid,
     							@RequestParam("commtText") String text) throws IOException {
     	String usr = sessionAccount(req);
@@ -201,7 +193,7 @@ public class DiscussController extends BaseController {
 	@ResponseBody
     public String toggleTag(HttpServletRequest req,
     							Model model,
-    							@CookieValue("JSESSIONID") String ssid,
+    							@CookieValue(value="JSESSIONID", required = false) String ssid,
     							@PathVariable("name") String tag,
     							@RequestParam("selected") boolean selected) {
 		discussService.setTagSelected(tag, selected, sessionAccount(req), sessionClient(ssid));
@@ -226,7 +218,6 @@ public class DiscussController extends BaseController {
     public String postInviter(HttpServletResponse resp,
     							HttpServletRequest req,
     							Model model,
-    							@CookieValue("JSESSIONID") String ssid,
     							@RequestParam("qid") int qid,
     							@RequestParam("invitee") String invitee) throws IOException  {
     	

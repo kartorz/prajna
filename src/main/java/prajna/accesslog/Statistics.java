@@ -38,8 +38,7 @@ public class Statistics  implements ParserListener {
 		docViewed = new HashMap<String, HashSet<Integer>>();
 	}
 
-	//@Scheduled(cron = "0 0 1 * * ?")
-	@Scheduled(cron = "50 21 15 * * ?")
+	@Scheduled(cron = "0 0 1 * * ?")
 	public void parser() {
 		String preDay = new SimpleDateFormat("YYYY-MM-dd").format(
 				new Timestamp(System.currentTimeMillis() - 2 * 60 * 60 * 1000)); //2 * 60 * 60 * 1000
