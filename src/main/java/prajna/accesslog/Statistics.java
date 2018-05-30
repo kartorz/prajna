@@ -116,7 +116,7 @@ public class Statistics  implements ParserListener {
 		    Map.Entry<Integer, Integer> pair = dit.next();
 		    int did = pair.getKey();
 		    int views = pair.getValue();
-		    docService.updateDocViews(views, did);
+		    docService.docViewsInc(views, did);
 		}
 	}
 }

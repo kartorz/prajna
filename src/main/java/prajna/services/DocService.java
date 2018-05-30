@@ -111,6 +111,11 @@ public class DocService {
 		return docRepo.findById(id);
 	}
 
+	public void docViewsInc(int views, int id) {
+		views += docRepo.findById(id).getViews();
+		docRepo.updateViews(views, id);
+	}
+
 	public void updateDocViews(int views, int id) {
 		docRepo.updateViews(views, id);
 	}
