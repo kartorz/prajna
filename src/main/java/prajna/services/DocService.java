@@ -36,6 +36,7 @@ import prajna.repos.DocCommentRepo;
 import prajna.repos.DocRepo;
 import prajna.repos.DocresRepo;
 import prajna.repos.DraftRepo;
+import prajna.repos.projection.DocOpaque;
 import prajna.repos.projection.Id;
 
 @Service
@@ -157,14 +158,14 @@ public class DocService {
 		}
 
 		if (doc.getTitle().trim().isEmpty())
-    		doc.setTitle("No Title");
+    			doc.setTitle("No Title");
 
 		if (doc.getUrl().trim().isEmpty())
-    		doc.setUrl("prajna.top");
-    	/*String brief = htmlDoc.select("p").first().text();
-	    if (brief.length() < Doc.BRIEF_STRLEN && htmlDoc.select("p").size() >= 2)
-	    	brief += htmlDoc.select("p").get(1).text();*/
-	    doc = docRepo.save(doc);
+    			doc.setUrl("prajna.top");
+
+		doc.setOpaque(docRepo.findOpaqueById(draft.getDid()));
+
+		doc = docRepo.save(doc);
 		attachResToDoc(htmlDoc, doc, draft.getId(), draft.getDid());
 
 		draftRepo.delete(draft);

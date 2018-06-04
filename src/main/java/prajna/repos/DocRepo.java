@@ -8,9 +8,11 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import prajna.models.Doc;
+import prajna.repos.projection.DocOpaque;
 
 public interface DocRepo  extends PagingAndSortingRepository<Doc, Integer> {
 	Doc findById(int id);
+	DocOpaque findOpaqueById(int id);
 	Page<Doc> findByCid(int cid, Pageable pageable);
 	Page<Doc> findByOnTop(boolean onTop, Pageable pageable);
 	Page<Doc> findAll(Pageable pageable);

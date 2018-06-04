@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import prajna.repos.projection.DocOpaque;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -79,6 +81,16 @@ public class Doc {
 		this.repost = repost;
 	}
 	
+	// The column without in 'Draft'.
+	public void setOpaque(DocOpaque opa ) {
+		if (opa != null) {
+			this.views = opa.getViews();
+			this.negative =  opa.getNegative();
+			this.positive = opa.getPositive();
+			this.score = opa.getScore();
+		}
+	}
+
     public int getId() {
         return id;
     }
@@ -145,7 +157,7 @@ public class Doc {
     public int getScore() {
         return score;
     }
-    public void getScore(int score) {
+    public void setScore(int score) {
         this.score = score;
     }
 
@@ -160,7 +172,7 @@ public class Doc {
         return negative;
     }
 
-    public void getNegative(int negative) {
+    public void setNegative(int negative) {
         this.negative = negative;
     }
  
