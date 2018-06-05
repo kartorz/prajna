@@ -43,16 +43,10 @@ public class Doc {
 	private String text = "";
 	private String account = "";
 	private String url = "";
-
-	@Transient String mdateStr = "";
-	@Transient String cdateStr = "";
 	
 	public Doc() {
 		cdate = new Timestamp(System.currentTimeMillis());
-		cdateStr = new SimpleDateFormat("YYYY-MM-dd hh:mm").format(cdate);
-
 		mdate = new Timestamp(System.currentTimeMillis());
-		mdateStr = new SimpleDateFormat("YYYY-MM-dd hh:mm").format(mdate);
 	}
 
 	public Doc(Draft draft) {
@@ -70,6 +64,7 @@ public class Doc {
 		this.category = CidToString[cid];
 		this.onTop = draft.getOnTop();
 		this.url = draft.getUrl();
+		this.mdate = new Timestamp(System.currentTimeMillis());
 	}
 
 	public Doc(int id, String title, String category, boolean repost) {
@@ -88,6 +83,7 @@ public class Doc {
 			this.negative =  opa.getNegative();
 			this.positive = opa.getPositive();
 			this.score = opa.getScore();
+			this.cdate = opa.getCdate();
 		}
 	}
 
@@ -123,7 +119,6 @@ public class Doc {
         return category;
     }
     public void setCategory(String category) {
-    	logger.info("setCategory");
         this.category = category;
     }
 
@@ -205,7 +200,6 @@ public class Doc {
 	
 	public void setCdate(Timestamp cdate) {
 		this.cdate = cdate;
-		cdateStr = new SimpleDateFormat("YYYY-MM-dd hh:mm").format(cdate);
 	}
 	
 	public Timestamp getMdate() {
@@ -214,14 +208,14 @@ public class Doc {
 	
 	public void setMdate(Timestamp mdate) {
 		this.mdate = mdate;
-		mdateStr = new SimpleDateFormat("YYYY-MM-dd hh:mm").format(mdate);
 	}
 	
-    public String getMdateStr() {
-    	return mdateStr;
-    }
+	public String getMdateStr() {
+		return new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(mdate);
+	}
+
     public String getCdateStr() {
-    	return cdateStr;
+		return new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(cdate);
     }
     public int getResid() {
         return resid;

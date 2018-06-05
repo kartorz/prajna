@@ -25,17 +25,14 @@ public class DocComment implements CommentItem {
 	private String text    = "";
 	private int    score   = 0;
 	private Timestamp   cdate;
-	@Transient String cdateStr = "";
 
 	public DocComment() {
 		cdate = new Timestamp(System.currentTimeMillis());
-		cdateStr = new SimpleDateFormat("YYYY-MM-dd hh:mm").format(cdate);
 
 	}
    
 	public DocComment(int did) {
 		cdate = new Timestamp(System.currentTimeMillis());
-		cdateStr = new SimpleDateFormat("YYYY-MM-dd hh:mm").format(cdate);
 		this.did = did;
 	}
 	
@@ -100,6 +97,6 @@ public class DocComment implements CommentItem {
     }
     
     public String getCdateStr() {
-    	return cdateStr;
+    	return new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(cdate);
     }
 }

@@ -24,11 +24,10 @@ public class QuestionAnswer implements CommentItem {
 	private String text    = "";
 	private int    score   = 0;
 	private Timestamp   cdate;
-	@Transient String cdateStr = "";
+	//@Transient String cdateStr = "";
 
 	public QuestionAnswer() {
 		cdate = new Timestamp(System.currentTimeMillis());
-		cdateStr = new SimpleDateFormat("YYYY-MM-dd hh:mm").format(cdate);
 	}
 
 	public QuestionAnswer(int qid, String text, String account) {
@@ -37,7 +36,6 @@ public class QuestionAnswer implements CommentItem {
 		this.account = account;
 		
 		cdate = new Timestamp(System.currentTimeMillis());
-		cdateStr = new SimpleDateFormat("YYYY-MM-dd hh:mm").format(cdate);
 	}
 	
 	public int getId() {
@@ -101,7 +99,7 @@ public class QuestionAnswer implements CommentItem {
     }
     
     public String getCdateStr() {
-    	return cdateStr;
+    	return new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(cdate);
     }
 
 	@Override

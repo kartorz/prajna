@@ -28,12 +28,10 @@ public class Question {
 	private String 		category = "";
 	private Timestamp   cdate;
 	private String   	invitees = "";
-	@Transient String 	cdateStr = "";
 	@Transient String 	tags = "";
 
 	public Question() {
 		cdate = new Timestamp(System.currentTimeMillis());
-		cdateStr = new SimpleDateFormat("YYYY-MM-dd hh:mm").format(cdate);
 	}
 	
 	public int getQid() {
@@ -83,7 +81,7 @@ public class Question {
 		this.category = category;
 	}
 	public String getCdateStr() {
-		return cdateStr;
+		return 	new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(cdate);
 	}
 	public Timestamp getCdate() {
 		return cdate;
@@ -91,7 +89,6 @@ public class Question {
 	
 	public void setCdate(Timestamp cdate) {
 		this.cdate = cdate;
-		cdateStr = new SimpleDateFormat("YYYY-MM-dd hh:mm").format(cdate);
 	}
 	
 	public String getTags() {
