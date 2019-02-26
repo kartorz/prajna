@@ -1,5 +1,8 @@
 package prajna.controllers;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
@@ -20,9 +23,12 @@ import prajna.services.SystemService;
 public class AccountController extends BaseController {
     private static final Logger logger = LogManager.getLogger(AccountController.class.getName() );
 
-	@Autowired	AccountService accountService;
-	@Autowired  SystemService  systemService;
- 
+	@Autowired
+	private AccountService accountService;
+	
+	@Autowired
+	private SystemService  systemService;
+	
 	@RequestMapping("/account/info")
     public String getAccountInfo(HttpServletRequest req, HttpServletResponse resp, Model model) {
     	return "account/info";
@@ -31,7 +37,7 @@ public class AccountController extends BaseController {
     @RequestMapping("/account/setting")
     public String getAccountStting(HttpServletRequest req, Model model,
 					@RequestParam(value="tab", defaultValue = "0") int tabIndex) {
-    	Account usrBean = accountService.getAccount(sessionAccount(req));
+    	Account usrBean = accountService.getAccount(sessionAccount());
     	usrBean.setPassword("");
 		model.addAttribute("usr", usrBean);
 		model.addAttribute("err", "");
@@ -44,13 +50,11 @@ public class AccountController extends BaseController {
     						@RequestParam(value="tab", defaultValue = "0") int tabIndex,
     						@RequestParam(value="action", defaultValue = "u") String action) {
     	//logger.info("postAccount:" + usrBean.getAccount() + " action:" + action + " passwd:" + usrBean.getPassword());
-    	if (sessionAccount(req).equalsIgnoreCase(usrBean.getAccount())) {
+    	if (sessionAccount().equalsIgnoreCase(usrBean.getAccount())) {
         	if (action.equalsIgnoreCase("u")) {
         		if (!usrBean.getPassword().isEmpty()) {
-        			logout(req);
+            		accountService.saveAccount(usrBean);
         		}
-        		accountService.saveAccount(usrBean);
-
         		return "redirect:/";
         	}
 
@@ -61,7 +65,6 @@ public class AccountController extends BaseController {
         		model.addAttribute("tabinx", 1);
         		return "account/setting";
         	}
-        	logout(req);
     	}
     	return "redirect:/";
     }
@@ -70,7 +73,6 @@ public class AccountController extends BaseController {
     public String resetPassword(HttpServletRequest req, Model model,
     							@RequestParam("account") String account) {
     	if (accountService.resetPassword(account)) {
-    		logout(req);
     		return "redirect:/";
     	}
 
@@ -78,41 +80,72 @@ public class AccountController extends BaseController {
 		model.addAttribute("account", account);
 		model.addAttribute("tabinx", 0);
 		model.addAttribute("err", systemService.getMessage("account.nonexist"));
-    	return "register";
+    	return "login";
     }
 
-    @RequestMapping(value="/signin", produces = "text/plain;charset=UTF-8")
+    @RequestMapping(value="/signin/success")
+    @ResponseBody
+    public String signinSuccess(HttpServletRequest req, HttpServletResponse resp, Model model) {
+    	return "success";
+    }
+  
+    @RequestMapping(value="/signin", method = RequestMethod.GET)
+    public String getSignin(HttpServletRequest req, HttpServletResponse resp, Model model,
+							@RequestParam(value="tab", defaultValue = "0") int tabIndex,
+							@RequestParam(value = "error", required = false) String error,
+							@RequestParam(value = "logout", required = false) String logout) {
+    	//logger.info("[getSignin], tabIndex:" + tabIndex );
+		if (error != null) {
+			try {
+				resp.setCharacterEncoding("utf-8");
+				PrintWriter out = resp.getWriter();
+				out.println("用户名不存在，或者密码出错");
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+		
+		if (logout != null) {
+			return "redirect:/";
+		}
+ 
+		model.addAttribute("usr", new Account());
+		model.addAttribute("account", "");
+		model.addAttribute("tabinx", tabIndex);
+		return "login";
+    }
+    
+    // Spring security takes over.
+    /*
+    @RequestMapping(value="/signin", method = RequestMethod.POST, produces = "text/plain;charset=UTF-8")
 	@ResponseBody
-    public String login(HttpServletRequest req, HttpServletResponse resp, Model model,
+    public String postSignin(HttpServletRequest req, HttpServletResponse resp, Model model,
     					@RequestParam("account") String account,
     					@RequestParam("passwd") String passwd) {
+		logger.info("[postSignin], return success");
 		if (accountService.checkPassword(account, passwd)) {
 			req.getSession().setAttribute("account", account);
 			return "success";
 		}
         return "用户名不存在，或者密码出错";
-    }
-
-	@RequestMapping(value="/signout")
-    public String logout(HttpServletRequest req) {
-		req.getSession().removeAttribute("account");
-	    return "redirect:/";
-    }
+    }*/
 
 	@RequestMapping(value="/signup", method = RequestMethod.GET)
 	public String getSignup(HttpServletRequest req, Model model, 
-							@RequestParam(value="tab", defaultValue = "0") int tabIndex) {
+							@RequestParam(value="tab", defaultValue = "1") int tabIndex) {
 		//logger.info("getSignup");
 		if (tabIndex == 1) {
-			model.addAttribute("usr", accountService.getAccount(sessionAccount(req)));
+			model.addAttribute("usr", accountService.getAccount(sessionAccount()));
 		} else {
 			model.addAttribute("usr", new Account());
 		}
 
-		model.addAttribute("account", sessionAccount(req));
+		model.addAttribute("account", sessionAccount());
 		model.addAttribute("err", "");
 		model.addAttribute("tabinx", tabIndex);
-		return "register";
+		return "login";
 	}
 
 	@RequestMapping(value="/signup", method = RequestMethod.POST, produces = "text/plain;charset=UTF-8")
@@ -120,9 +153,9 @@ public class AccountController extends BaseController {
     					   HttpServletResponse resp,
     					   Model model,
     					   Account usrBean,
-    					   @RequestParam(value="tab", defaultValue = "0") int tabIndex) {
-		//logger.info("signup " + usrBean.getAccount());
-	    if (!accountService.signUp(usrBean)) {
+    					   @RequestParam(value="tab", defaultValue = "1") int tabIndex) {
+		//logger.info("postSignup " + usrBean.getAccount());
+		if (!accountService.signUp(usrBean)) {
 	    	usrBean.setPassword("");
 	    	if (usrBean.getAccount() != "") {
 	    		model.addAttribute("usr", usrBean);
@@ -131,9 +164,9 @@ public class AccountController extends BaseController {
 	    		model.addAttribute("usr", usrBean);
 	    		model.addAttribute("err", "");
 	    	}
-	    	model.addAttribute("account", sessionAccount(req));
-    		model.addAttribute("tabinx", 0);
-	    	return "register";
+	    	model.addAttribute("account", sessionAccount());
+    		model.addAttribute("tabinx", tabIndex);
+	    	return "login";
 	    }
 	    req.getSession().setAttribute("account", usrBean.getAccount());
 	    return "redirect:/";

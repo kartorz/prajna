@@ -1,15 +1,10 @@
 package prajna.services;
 
-
-import java.util.HashMap;
-import java.util.Locale;
-
-import javax.servlet.http.HttpSession;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import prajna.models.Account;
@@ -17,31 +12,53 @@ import prajna.repos.AccountRepo;
 
 @Service
 @Scope("application")
-public class AccountService {
+public class AccountService  {
 	private static final Logger logger = LogManager.getLogger(AccountService.class.getName());
 	private static final int PrivilegeAdmin = 5;
 	private static final int PrivilegeDelete = 3;
-
+	public  static final int BCryptStrength = 4; 
+	
 	//private HashMap<String, String>  ssidMap;
 
 	@Autowired
 	AccountRepo  accountRepo;  
 	
-	@Autowired EmailService  emailService;
-	
+	@Autowired 
+	private EmailService  emailService;
+
+	@Autowired
+	private SecurityUserService securityUserService;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
 	public AccountService() {
 		//ssidMap = new HashMap<String, String>();
 	}
-
+	
 	public void saveAccount(Account usr) {
 		if (!usr.getPassword().isEmpty()) {
-			usr.setPassword(SystemService.getStrMd5(usr.getPassword()));
+			usr.setPassword( passwordEncoder.encode(usr.getPassword()));
 		} else {
 			usr.setPassword(getAccount(usr.getAccount()).getPassword());
 		}
 		accountRepo.save(usr);	
 	}
 
+	public boolean isAdmin(String usr) {
+		if (usr != null && usr != "") { 
+			Account account = accountRepo.findByAccount(usr);
+			if (account != null) {
+				for (String role: account.getRoles()) {
+					if (role.equalsIgnoreCase("ROLE_ADMIN"))
+                        return true;
+				}
+			}
+        }
+		return false;
+	}
+
+	
 	public boolean deleteAccount(Account usr) {
 		if (checkPassword(usr.getAccount(), usr.getPassword())) {
 			accountRepo.delete(usr.getAccount());
@@ -54,27 +71,26 @@ public class AccountService {
 		if (usr.getAccount() == "" || usr.getPassword() == "")
 			return false;
 
-		usr.setAccount(usr.getAccount().toLowerCase());
-		if (accountRepo.findByAccount(usr.getAccount()) == null) {
-			String passMd5 = SystemService.getStrMd5(usr.getPassword());
-			if (passMd5 != "") {
-				usr.setPassword(passMd5);
-
-				String accountStr = usr.getAccount();
-				int atInx = accountStr.indexOf('@');
-				if (atInx != -1) {
-					if (usr.getNickName() == "")
-						usr.setNickName(accountStr.substring(0, atInx));
-					usr.setEmail(accountStr);
-				} else {
-					if (usr.getNickName() == "")
-						usr.setNickName(accountStr);
-				}
-				usr.setName(usr.getNickName());
-				accountRepo.save(usr);
-				//logger.info("sign up success!");
-				return true;
+		if (accountRepo.findByAccountIgnoreCase(usr.getAccount()) == null) {
+			usr.setPassword(passwordEncoder.encode(usr.getPassword()));
+			
+			String accountStr = usr.getAccount();
+			int atInx = accountStr.indexOf('@');
+			if (atInx != -1) {
+				if (usr.getNickName() == "")
+					usr.setNickName(accountStr.substring(0, atInx));
+				
+				usr.setEmail(accountStr);
+			} else {
+				if (usr.getNickName() == "")
+					usr.setNickName(accountStr);
 			}
+			usr.setName(usr.getNickName());
+			
+			accountRepo.save(usr);
+			
+			securityUserService.signIn(usr);
+			return true;
 		}
 
 		return false;
@@ -86,8 +102,8 @@ public class AccountService {
 
 		Account usr = accountRepo.findByAccount(account);
 		if (usr != null) {
-			String passMd5 = SystemService.getStrMd5(passwd);
-			if (passMd5.equalsIgnoreCase(usr.getPassword()))
+			String passEncoder = passwordEncoder.encode(passwd);
+			if (passEncoder.equalsIgnoreCase(usr.getPassword()))
 				return true;
 		}
 		return false;
@@ -108,15 +124,6 @@ public class AccountService {
 	public void mapAccountBySsid(String ssid, String account) {
 		/*if (ssidMap.get(ssid) == null)
 			ssidMap.put(ssid, account);*/
-	}
-	
-	public boolean isAdmin(String account) {
-		if (account != null && account != "") { 
-			Account usr = accountRepo.findByAccount(account);
-			if (usr != null)
-				return (usr.getPrivilege() >= PrivilegeAdmin);
-		}
-		return false;
 	}
 	
 	public boolean canDeleteDocByUsr(String login, String docAccount) {
@@ -150,8 +157,8 @@ public class AccountService {
 		int ret = 0;
 		if (account != "") {
 			String passwd = Integer.toString((int)((Math.random()*9+1)*100000));
-			String passMd5 = SystemService.getStrMd5(passwd);
-			ret = accountRepo.updatePasswordByAccount(account, passMd5);
+			String passEncoder = passwordEncoder.encode(passwd);
+			ret = accountRepo.updatePasswordByAccount(account, passEncoder);
 			if (ret > 0) {
 				emailService.resetPassword(account, passwd);
 			}
@@ -163,8 +170,8 @@ public class AccountService {
 	public boolean updatePassword(String account, String passwd) {
 		int ret = 0;
 		if (account != "") {
-			String passMd5 = SystemService.getStrMd5(passwd);
-			ret = accountRepo.updatePasswordByAccount(account, passMd5);
+			String passEncoder = passwordEncoder.encode(passwd);
+			ret = accountRepo.updatePasswordByAccount(account, passEncoder);
 		}
 		return (ret > 0);
 	}

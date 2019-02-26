@@ -28,9 +28,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
-import prajna.controllers.AdminInterceptor;
 import prajna.controllers.BaseInterceptor;
-import prajna.controllers.AuthInterceptor;
 
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 
@@ -41,8 +39,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 @EnableSpringDataWebSupport
 @EnableScheduling
 @PropertySource("classpath:/app.properties")
-public class PrajnaWebAppConfig extends SpringDataWebConfiguration{
-	private static final Logger logger = LogManager.getLogger(PrajnaWebAppConfig.class.getName() );
+public class PrajnaServletConfig extends SpringDataWebConfiguration{
+	private static final Logger logger = LogManager.getLogger(PrajnaServletConfig.class.getName() );
 
 	@Autowired
 	private ApplicationContext context;
@@ -66,7 +64,7 @@ public class PrajnaWebAppConfig extends SpringDataWebConfiguration{
 		//logger.info("dataDir:" + dataDir + "/uploader/");
 		//registry.addResourceHandler("/uploader/**").addResourceLocations(dataDir + "/uploader/");
 		registry.addResourceHandler("/css/**").addResourceLocations("/css/");
-		registry.addResourceHandler("/js/**").addResourceLocations("/js/").setCachePeriod(31556926);	
+		registry.addResourceHandler("/js/**").addResourceLocations("/js/").setCachePeriod(31556926);
 	}
 	
 	@Override
@@ -91,27 +89,28 @@ public class PrajnaWebAppConfig extends SpringDataWebConfiguration{
 	//public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 	//}
 	
-	@Bean
+	/*@Bean
 	public AdminInterceptor adminInterceptor() {
 	    return new AdminInterceptor();
-	}
+	}*/
 
-	@Bean
+	/*@Bean
 	public AuthInterceptor authInterceptor() {
 	    return new AuthInterceptor();
-	}	
+	}*/	
 	
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
+	
 		registry.addInterceptor(new BaseInterceptor());
 		
-		String[] adminPaths = new String[] {"/doc/**", "/draft/**"};
+		/*String[] adminPaths = new String[] {"/doc/**", "/draft/**"};
 		registry.addInterceptor(adminInterceptor()).addPathPatterns(adminPaths)
-			.excludePathPatterns("/doc/comment/**");
+			.excludePathPatterns("/doc/comment/**");*/
 
-		String[] unauthPaths = new String[] {"/signup/**", "/signin/**", "/doc/**", "/draft/**"};
+		/*String[] unauthPaths = new String[] {"/signup/**", "/signin/**", "/doc/**", "/draft/**"};
 		registry.addInterceptor(authInterceptor()).addPathPatterns("/**")
-			.excludePathPatterns(unauthPaths);
+			.excludePathPatterns(unauthPaths);*/
 	}
 	
 	@Bean

@@ -2,8 +2,6 @@ package prajna.models;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
 
 @Entity(name = "QuestionTags")
 public class QuestionTag {

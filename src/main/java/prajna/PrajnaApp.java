@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.MultipartConfigElement;
@@ -12,21 +11,21 @@ import javax.servlet.ServletRegistration;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-public class PrajnaWebApp extends AbstractAnnotationConfigDispatcherServletInitializer {
-	private static final Logger logger = LogManager.getLogger(PrajnaWebApp.class.getName() );
+public class PrajnaApp extends AbstractAnnotationConfigDispatcherServletInitializer {
+	private static final Logger logger = LogManager.getLogger(PrajnaApp.class.getName() );
 	
 	@Override
 	protected Class<?>[] getRootConfigClasses() {
-		return null;
+		return new Class[] { PrajnaSecurityConfig.class};
+		//return null;
 	}
 
 	@Override
 	protected Class<?>[] getServletConfigClasses() {
-		return new Class[] { PrajnaWebAppConfig.class };
+		return new Class[] { PrajnaServletConfig.class };
 	}
 
 	@Override
@@ -57,7 +56,7 @@ public class PrajnaWebApp extends AbstractAnnotationConfigDispatcherServletIniti
 		registration.setMultipartConfig(multipartConfigElement);
     }
 
-	private static final String UPLOAD_LOCATION = AppContext.DataPath + "/uploader"; // Temporary location where files will be stored
+	private static final String UPLOAD_LOCATION = PrajnaAppContext.DataPath + "/uploader"; // Temporary location where files will be stored
     private static final long MAX_FILE_SIZE = 5242880; // 5MB : Max file size.
                                                         // Beyond that size spring will throw exception.
     private static final long MAX_REQUEST_SIZE = 20971520; // 20MB : Total request size containing Multi part.

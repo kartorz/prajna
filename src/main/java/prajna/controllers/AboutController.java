@@ -48,7 +48,7 @@ public class AboutController extends BaseController {
     							Pageable page,
     							@RequestParam("did") int did) {
     	//logger.info("getMessages");
-    	model.addAttribute("login", sessionAccount(req));
+    	model.addAttribute("login", sessionAccount());
         model.addAttribute("comments",usrMsgService.retrieveMessages(page));
         return  "ajax/commentlist :: comment-list" ;
     }
@@ -59,7 +59,7 @@ public class AboutController extends BaseController {
     							Model model,
     							@RequestParam("commtText") String text) throws IOException {
 	    //logger.info("postMessage");
-    	String usr = sessionAccount(req);
+    	String usr = sessionAccount();
     	UserMessage msgBean = new UserMessage();
     	msgBean.setText(text);
     	msgBean.setAccount(usr);
@@ -87,7 +87,7 @@ public class AboutController extends BaseController {
     							@RequestParam("value") String text) {
     	
     	//logger.info("putMessage");
-    	String usr = sessionAccount(req);
+    	String usr = sessionAccount();
 	    if (text.length() <= UserMessage.LEN_TEXT && usrMsgService.updateMessage(id, usr, text) > 0) {
 	    	return "";
 	    }
@@ -101,7 +101,7 @@ public class AboutController extends BaseController {
     								@RequestParam("did") int did,
     								@RequestParam("p") int p) {
     	//logger.info("deleteMessage");
-    	String usr = sessionAccount(req);
+    	String usr = sessionAccount();
     	usrMsgService.deleteMessage(id, usr);
 	    
     	model.addAttribute("login", usr);

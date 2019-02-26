@@ -40,7 +40,6 @@ import prajna.repos.DocRepo;
 import prajna.repos.DocTreeRepo;
 import prajna.repos.DocresRepo;
 import prajna.repos.DraftRepo;
-import prajna.repos.projection.DocOpaque;
 import prajna.repos.projection.Id;
 
 @Service

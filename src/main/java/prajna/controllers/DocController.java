@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -21,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -67,7 +64,6 @@ public class DocController extends BaseController {
     @RequestMapping( method=RequestMethod.GET, value="/doc/list/{cid}")
     public String getDocListView(Model model, Pageable page, @PathVariable("cid") int cid) {
         //logger.info("getDocListView category:"  + "pageable:" + page);
- 
         List<Doc> docList = docService.getDocList(cid, page);
         if (docList != null) {
         	model.addAttribute("docs", docList.toArray());
@@ -79,16 +75,7 @@ public class DocController extends BaseController {
 	@RequestMapping(method=RequestMethod.GET, value="/doc/editor/{id}")
     public String editDoc(HttpServletRequest req, HttpServletResponse resp, Model model,
     					  @PathVariable("id") int docId) {
-    	String usr = sessionAccount(req);
-	    if (usr.isEmpty()) {
-	    	sendError(resp, "请先登录系统");
-	    	return  null;
-	    }
-	    if (!accountService.isAdmin(usr)) {
-	    	sendError(resp, "请用管理员帐号登录");
-	    	return  null;
-	    }
-
+    	String usr = sessionAccount();
 	    Draft draftBean = docService.getDraft(usr, docId);
 	    if (draftBean == null) {
 	    	Doc doc = docService.getDoc(docId);
@@ -104,7 +91,7 @@ public class DocController extends BaseController {
 		model.addAttribute("allCatetorys", getCategorys());
 	    model.addAttribute("docId", docId);
 	    model.addAttribute("draftBean", draftBean);
-        model.addAttribute("isAdmin", accountService.isAdmin(usr));
+        model.addAttribute("isAdmin", isAdmin());
     
         logger.debug("editDoc docid:" + docId + " draftid:" + draftBean.getId());
 	    return "doc/edit";
@@ -128,7 +115,6 @@ public class DocController extends BaseController {
     					Draft draftBean,
     					@PathVariable("id") int id,
     					@RequestParam("action") String action) {
-  
     	logger.debug("post doc: " + id + " draft id:" + draftBean.getId());
 
     	if(action.equalsIgnoreCase("publish")) {
@@ -193,10 +179,11 @@ public class DocController extends BaseController {
     	
     	Doc docBean = docService.getDoc(id);
         if (docBean == null)
-        	docBean = new Doc();
-    	String usr = sessionAccount(req);
-	    model.addAttribute("login", usr);
-	    model.addAttribute("docBean", docBean);
+            docBean = new Doc();
+
+        String usr = sessionAccount();
+        model.addAttribute("login", usr);
+        model.addAttribute("docBean", docBean);
         model.addAttribute("isOwner", accountService.canDeleteDocByUsr(usr, docBean.getAccount()));
         model.addAttribute("commentPgMeta", docService.getCommentPgMetaJson(id));
         model.addAttribute("comments",docService.getCommentList(id, new PageRequest(0, DocService.COMMT_PG_SIZE, Sort.Direction.DESC, "cdate")));
@@ -207,7 +194,7 @@ public class DocController extends BaseController {
     @RequestMapping(value="/doc/{id}", method = RequestMethod.DELETE)
     @ResponseBody
     public String delDoc(@PathVariable("id") int id) {
-    	logger.info("delete id:" + id);
+    	logger.debug("delete id:" + id);
         docService.deleteDoc(id);
         return "";
     }
@@ -221,7 +208,7 @@ public class DocController extends BaseController {
     	//logger.info("upload draft id:" + draftId);
     	try {
     		Part file = req.getPart("upload");
-    		return docService.uploadRes(sessionAccount(req), draftId, file);
+    		return docService.uploadRes(sessionAccount(), draftId, file);
     	} catch (Exception e) {
     		logger.error("upload getPart error:" + e.toString());
     		e.printStackTrace();
@@ -234,7 +221,7 @@ public class DocController extends BaseController {
     public byte[] getUploaderFile(HttpServletRequest req,
     							@PathVariable("resid") String resid,
     							@PathVariable("filename") String fileName) throws IOException {
-    	//logger.info("getUploaderFile resid:" + resid);
+    	logger.debug("getUploaderFile resid:" + resid);
     	return docService.getUploaderFile(resid, fileName);
     }
     
@@ -246,7 +233,7 @@ public class DocController extends BaseController {
     							@RequestParam("did") int did) {
     	//logger.info("sort:" + page.getSort().toString());
    
-    	model.addAttribute("login",  sessionAccount(req));
+    	model.addAttribute("login",  sessionAccount());
         model.addAttribute("comments",docService.getCommentList(did, page));
         return  "ajax/commentlist :: comment-list" ;
     }
@@ -257,13 +244,8 @@ public class DocController extends BaseController {
     							Model model,
     							@RequestParam("did") int did,
     							@RequestParam("commtText") String text) throws IOException {
-    	
-    	String usr = sessionAccount(req);
-	    if (usr.isEmpty()) {
-	    	sendError(resp, "请先登录系统");
-	    	return  null;
-	    }
-	    //logger.debug("post postDocComment: " + did);
+	    //logger.info("post postDocComment: " + did);
+    	String usr = sessionAccount();
     	DocComment docComment = new DocComment(did);
     	docComment.setText(text);
     	docComment.setAccount(usr);
@@ -286,13 +268,8 @@ public class DocController extends BaseController {
     							@RequestParam("pk") int id,
     							@RequestParam("name") String col,
     							@RequestParam("value") String text) {
-    	
     	//logger.info("putDocComment");
-    	String usr = sessionAccount(req);
-	    if (usr.isEmpty()) {
-	    	sendError(resp, "请先登录系统");
-	    	return  null;
-	    }
+    	String usr = sessionAccount();
 	    if (text.length() <= DocComment.LEN_TEXT && docService.editTextOfDocComment(id, usr, text) > 0) {
 	    	return "";
 	    }
@@ -306,12 +283,9 @@ public class DocController extends BaseController {
     								@PathVariable("id") int id,
     								@RequestParam("did") int did,
     								@RequestParam("p") int p) {
+    	
     	//logger.info("deleteDocComment");
-    	String usr = sessionAccount(req);
-	    if (usr.isEmpty()) {
-	    	sendError(resp, "请先登录系统");
-	    	return  null;
-	    }
+    	String usr = sessionAccount();
 	    docService.deleteDocComment(id, usr);
 	    
     	model.addAttribute("login", usr);
@@ -328,14 +302,7 @@ public class DocController extends BaseController {
     						@RequestParam("pid")  int pid,
     						@RequestParam("cid")  int cid) {
     	logger.info("postEdoc: title:" + title + " pid:" + pid + " cid:" + cid);
-    	String usr = sessionAccount(req);
-	    if (!usr.isEmpty()) {
-	    	docService.uploadEdoc(usr, 0, doc, title, pid, cid);
-	    	return "success";
-	    } else {
-	    	sendError(resp, "请先登录系统");
-	    	return null;
-	    }
-
+    	docService.uploadEdoc(sessionAccount(), 0, doc, title, pid, cid);
+	    return "success";
     }
 }

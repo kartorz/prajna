@@ -11,6 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 
 import prajna.models.ClientSession;
@@ -28,12 +31,30 @@ public class BaseController {
 	BaseController() {
 	}
 	
-	public static String sessionAccount(HttpServletRequest req) {
-        Object ret = req.getSession().getAttribute("account");
-        if (ret == null)
-        	return "";
-		
-        return (String) ret;
+	public static String sessionAccount() {
+		String username;
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    	if (principal instanceof UserDetails) {
+    		username = ((UserDetails)principal).getUsername();
+    	} else {
+    	   username = principal.toString();
+    	}
+    	
+    	//logger.info("[sessionAccount], username:" + username);
+    	if (username.equalsIgnoreCase("anonymousUser")) //ROLE_ANONYMOUS
+    		username = "";
+        return username;
+	}
+	
+	public boolean isAdmin() {
+		UserDetails principal = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+ 
+		for (GrantedAuthority role : principal.getAuthorities()) {
+			if (role.getAuthority().equalsIgnoreCase("ROLE_ADMIN"))
+				return true;
+		}
+  
+		return false;
 	}
 
 	/*protected String sessionId(HttpServletRequest req, String ssid) {

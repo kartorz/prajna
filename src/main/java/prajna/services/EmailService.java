@@ -9,7 +9,7 @@ import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
-import prajna.AppContext;
+import prajna.PrajnaAppContext;
 
 @Service
 @Scope("application")
@@ -27,7 +27,7 @@ public class EmailService {
 		content +=  "您的密码已重置为：(" + passwd + ")\n\n";
 		content += "\n\n\n===================================\n";
 		content += "  prajna.top 系统自动发送邮件，请勿回复\n";
-		msg.setFrom(AppContext.EmailFrom);
+		msg.setFrom(PrajnaAppContext.EmailFrom);
 		msg.setTo(addr);
 		msg.setSubject("[Prajna] 密码重置");
 		msg.setText(content);
@@ -45,7 +45,7 @@ public class EmailService {
 		content += url;
 		content += "\n\n\n===================================\n";
 		content += "  prajna.top 系统自动发送邮件，请勿回复\n";
-		msg.setFrom(AppContext.EmailFrom);
+		msg.setFrom(PrajnaAppContext.EmailFrom);
 		msg.setTo(invitee);
 		msg.setSubject("[Prajna] "  + inviter + " 邀请您回答问题");
 		msg.setText(content);

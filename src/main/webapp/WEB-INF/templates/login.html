@@ -43,6 +43,23 @@
 
 <body>
   <div id="tt" class="easyui-tabs" style="width:780px;height:320px; transform: translateY(-50%);" data-options="tabPosition:'left',narrow:true">
+    <div title="用户登录" style="padding:10px;margin-top:10%">
+      <form th:fragment=signin-form id="fm-signin" class="easyui-form" action="#" method="post" data-options="novalidate:true">
+        <div style="margin-bottom:20px;margin-left:15%">
+          <input class="easyui-textbox" name="account" style="width:60%" data-options="label:'用户名:',required:true">
+        </div>
+        <div style="margin-bottom:20px;margin-left:15%">
+           <input class="easyui-textbox" type="password" name="passwd" style="width:60%" data-options="label:'密码:',required:true">
+        </div>
+        <div style="margin-bottom:20px;margin-left:15%">
+          <p id="fm-signin-info" style="color:red;"></p>
+        </div>
+      </form>
+      <div id="dlg-signin-buttons" style="margin-left:15%;text-align:center;padding:5px 0">
+        <a href="javascript:void(0)" class="easyui-linkbutton" th:onclick="|submitSiginForm('@{/signin}')|" style="width:80px; margin-left:20px">登录</a>
+      </div>
+    </div>
+  
     <div title="新用户注册" style="padding:10px">
 	  <form id="register" th:action="@{/signup}" th:object="${usr}" method="post" onsubmit="return onSubmitForm(this)">
         <table class="tbl-left-padded">

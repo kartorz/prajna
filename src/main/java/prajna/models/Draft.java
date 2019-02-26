@@ -1,20 +1,13 @@
 package prajna.models;
 
-import java.sql.Clob;
-import java.sql.SQLException;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Transient;
-import javax.sql.rowset.serial.SerialClob;
-import javax.sql.rowset.serial.SerialException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import prajna.services.DocService;
 
 
 @Entity

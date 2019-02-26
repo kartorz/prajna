@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-
 import prajna.services.AccountService;
 
 @Controller
@@ -20,10 +19,7 @@ public class AdminController extends BaseController {
 	AccountService accountService;
 
 	@RequestMapping(value="/admin")
-    public String admin(HttpServletRequest req, HttpServletResponse resp, Model model) {
-		if (accountService.isAdmin(sessionAccount(req))) {
-			return "admin";
-		}
-        return "redirect:/";
+    public String admin(HttpServletRequest req, HttpServletResponse resp, Model model) {        
+        return "admin";
     }
 }

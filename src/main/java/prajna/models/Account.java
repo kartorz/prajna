@@ -1,9 +1,12 @@
 package prajna.models;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 @Entity(name = "Accounts")
 public class Account {
@@ -24,6 +27,9 @@ public class Account {
 	private int privilege = 0;
 	private boolean valid = true;
 
+	@Transient
+	List<String> authorities;
+	
 	public Account() {
 		regdate = new Date();
 	}
@@ -138,5 +144,13 @@ public class Account {
 
 	public void setValid(boolean valid) {
 		this.valid = valid;
-	} 
+	}
+
+	public List<String> getRoles() {
+		authorities = new ArrayList<>(1);
+		authorities.add("ROLE_USER");
+		if (account.compareTo("Admin") == 0)
+			authorities.add("ROLE_ADMIN");
+		return authorities;
+	}
 }

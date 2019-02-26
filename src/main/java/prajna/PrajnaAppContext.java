@@ -27,13 +27,13 @@ import org.thymeleaf.templatemode.TemplateMode;
 import prajna.controllers.DocController;
 
 @Configuration
-@ComponentScan(basePackages= "prajna.repos")
+@ComponentScan(basePackages= "prajna")
 @EnableTransactionManagement
 @EnableJpaRepositories 
-public class AppContext {
-    private static final Logger logger = LogManager.getLogger(AppContext.class.getName() );
+public class PrajnaAppContext {
+    private static final Logger logger = LogManager.getLogger(PrajnaAppContext.class.getName() );
 	public static final String DataPath = System.getProperty("user.home") + "/.prajna";
-	public static final String EmailFrom = "";
+	public static final String EmailFrom =  "xxxx@outlook.com";//"progcada@163.com";
 	//public static final String DataPath = "/raid/srv/prajna";
 	private final String dbPath = DataPath + "/prajna";
 	
@@ -41,7 +41,7 @@ public class AppContext {
 	private ApplicationContext context;
 	
 	@Bean
-	DataSource dataSource() {
+	public DataSource dataSource() {
 		//String url = "jdbc:h2:file:~/.prajna/prajna;INIT=create schema if not exists usr\\; runscript from 'classpath:schema.sql'";
 		String url = "jdbc:h2:file:" + dbPath + ";INIT=create schema if not exists usr\\; runscript from 'classpath:schema.sql'";
 		BasicDataSource ds = new BasicDataSource();

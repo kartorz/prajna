@@ -30,7 +30,7 @@ public class SystemService {
     public static final String  UPLOADERDIR_NAME =  "uploader";
 	public static final String  dataDir = System.getProperty("user.home") + "/.prajna";
 	public static final String  uploaderDir = dataDir + "/" + UPLOADERDIR_NAME + "/" ;
-	public static final String  edocDir = dataDir + "/edoc";
+	public static final String  edocDir = null;  // Not null -- enable edoc function
 
 	public static final int PG_SIZE = 20;
 	public static final int COMMT_PG_SIZE = 10;
@@ -44,8 +44,10 @@ public class SystemService {
     MessageSource messageSource;
 	
 	public SystemService() {
-		edocPath = createDir(edocDir);
-		logger.info("SystemService, edoc path:" + edocDir);
+		if (edocDir != null) {
+			edocPath = createDir(edocDir);
+			logger.info("SystemService, edoc path:" + edocDir);
+		}
 	}
     
 	public String getMessage(String id) {

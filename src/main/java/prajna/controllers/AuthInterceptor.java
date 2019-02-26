@@ -26,10 +26,10 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			if (request.getRequestURI().startsWith("/account/"))
 				bIntercept = true;
 		}
-	
+		bIntercept = false;
 		if (bIntercept) {
 			//logger.debug("preHandle check usr login");
-			String usr = BaseController.sessionAccount(request);
+			String usr = BaseController.sessionAccount();
 			if (usr.isEmpty()) {
 				BaseController.sendError(response, "请先登录系统");
 				//response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "0");

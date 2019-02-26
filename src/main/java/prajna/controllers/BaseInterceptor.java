@@ -25,7 +25,7 @@ public class BaseInterceptor extends HandlerInterceptorAdapter {
 		}*/
 
 		if (request.getMethod() == "POST" || request.getMethod() == "PUT") {
-			if (!request.getRequestURI().startsWith("/uploader"))
+			if (request.getRequestURI().startsWith("/doc/comment"))
 				return moderate(request, response);
 		}
 		return true;
@@ -40,7 +40,7 @@ public class BaseInterceptor extends HandlerInterceptorAdapter {
 
 	private boolean moderate(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		long dt = System.currentTimeMillis() - request.getSession().getLastAccessedTime();
-		if (dt < 3000 && dt > 0) {
+		if (dt < 1000 && dt > 0) {
 			// FFirst time dt == 0
 			//logger.info("dt:" + dt);
 			BaseController.sendError(response, "操作太频繁了，先休息一下吧");

@@ -22,7 +22,7 @@ public class AdminInterceptor extends HandlerInterceptorAdapter {
 			//request.getRequestURI(): /doc/comment/0
 			//request.getRequestURL() : http://127.0.0.1:8080/doc/comment/0
 			//logger.debug("preHandle check if Admin:" + request.getRequestURI());
-			String usr = BaseController.sessionAccount(request);
+			String usr = BaseController.sessionAccount();
 			if (!accountService.isAdmin(usr)) {
 				BaseController.sendError(response, "请用管理员帐号登录");
 			    return  false;

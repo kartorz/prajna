@@ -44,17 +44,17 @@ public class DiscussController extends BaseController {
     public String discuss(HttpServletRequest req, Model model, @CookieValue(value="JSESSIONID", defaultValue = "") String ssid) {
 		Pageable page = new PageRequest(0, SystemService.PG_SIZE, Sort.Direction.DESC, "cdate");
 		//model.addAttribute("pgmeta", docService.getPgMetaJson(1));
-	    model.addAttribute("tags", discussService.getMyTagList(sessionAccount(req), sessionClient(ssid)));
-		Page<Question> qusPage = discussService.getQuestionPage(sessionAccount(req), sessionClient(ssid), page);
+	    model.addAttribute("tags", discussService.getMyTagList(sessionAccount(), sessionClient(ssid)));
+		Page<Question> qusPage = discussService.getQuestionPage(sessionAccount(), sessionClient(ssid), page);
 	    model.addAttribute("questions", qusPage);
 	    model.addAttribute("pgmeta", discussService.getPgMetaJson(qusPage));
-		model.addAttribute("login", sessionAccount(req));
+		model.addAttribute("login", sessionAccount());
 	    return "discuss";
     }
   
 	@RequestMapping( method=RequestMethod.GET, value="/questions")
     public String getQuestionListView(HttpServletRequest req, Model model, Pageable page, @CookieValue(value="JSESSIONID", required = false) String ssid) {
-		Page<Question> qusPage = discussService.getQuestionPage(sessionAccount(req), sessionClient(ssid), page);
+		Page<Question> qusPage = discussService.getQuestionPage(sessionAccount(), sessionClient(ssid), page);
         model.addAttribute("questions", qusPage);
 
         return  "ajax/questionlist :: question-list" ;
@@ -65,7 +65,7 @@ public class DiscussController extends BaseController {
     							HttpServletResponse resp,
     							Model model,
     							@PathVariable("id") int qid ) {
-		String usr = sessionAccount(req);
+		String usr = sessionAccount();
 		if (usr.isEmpty()) {
 			sendError(resp, "请先登录系统");
 			return null;
@@ -80,7 +80,7 @@ public class DiscussController extends BaseController {
     						  Model model,
     						  @PathVariable("id") int qid ) {
 		Question qstnBean = discussService.getQuestion(qid);
-		model.addAttribute("login", sessionAccount(req));
+		model.addAttribute("login", sessionAccount());
 		model.addAttribute("qstnBean", qstnBean);
 	    model.addAttribute("commentPgMeta", discussService.getCommentPgMetaJson(qid));
 		model.addAttribute("comments", discussService.getAnswers(qid, new PageRequest(0, SystemService.COMMT_PG_SIZE, Sort.Direction.DESC, "cdate")));
@@ -95,7 +95,7 @@ public class DiscussController extends BaseController {
 			  				   Question qstnBean,
 			  				   @PathVariable("id") int qid) {
 		String url;
-		String usr = sessionAccount(req);
+		String usr = sessionAccount();
 		if (usr.isEmpty()) {
 			sendError(resp, "请先登录系统");
 			return null;
@@ -118,7 +118,7 @@ public class DiscussController extends BaseController {
     						  Model model,
     						  @PathVariable("id") int qid ) {
 	
-		String usr = sessionAccount(req);
+		String usr = sessionAccount();
 		if (usr.isEmpty()) {
 			sendError(resp, "请先登录系统");
 			return null;
@@ -134,7 +134,7 @@ public class DiscussController extends BaseController {
     							Model model,
     							Pageable page,
     							@RequestParam("did") int did) {
-    	model.addAttribute("login",  sessionAccount(req));
+    	model.addAttribute("login",  sessionAccount());
         model.addAttribute("comments", discussService.getAnswers(did, page));
         return  "ajax/commentlist :: comment-list";
     }
@@ -144,7 +144,7 @@ public class DiscussController extends BaseController {
     								@PathVariable("id") int id,
     								@RequestParam("qid") int qid,
     								@RequestParam("p") int p) {
-    	String usr = sessionAccount(req);
+    	String usr = sessionAccount();
 	    if (usr.isEmpty()) {
 	    	return  null;
 	    }
@@ -160,7 +160,7 @@ public class DiscussController extends BaseController {
     							@RequestParam("pk") int id,
     							@RequestParam("name") String col,
     							@RequestParam("value") String text) throws IOException{
-    	String usr = sessionAccount(req);
+    	String usr = sessionAccount();
 	    if (usr.isEmpty()) {
 			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No login");
 			return;
@@ -174,7 +174,7 @@ public class DiscussController extends BaseController {
     							Model model,
     							@RequestParam("qid") int qid,
     							@RequestParam("commtText") String text) throws IOException {
-    	String usr = sessionAccount(req);
+    	String usr = sessionAccount();
 	    if (usr.isEmpty()) {
 			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "0");
 			return null;
@@ -196,7 +196,7 @@ public class DiscussController extends BaseController {
     							@CookieValue(value="JSESSIONID", required = false) String ssid,
     							@PathVariable("name") String tag,
     							@RequestParam("selected") boolean selected) {
-		discussService.setTagSelected(tag, selected, sessionAccount(req), sessionClient(ssid));
+		discussService.setTagSelected(tag, selected, sessionAccount(), sessionClient(ssid));
 		return "discuss";
     }
 	
@@ -222,7 +222,7 @@ public class DiscussController extends BaseController {
     							@RequestParam("invitee") String invitee) throws IOException  {
     	
     	//logger.info("joni postInviter :" + getBaseUrl(req));
-    	String usr = sessionAccount(req);
+    	String usr = sessionAccount();
 	    if (usr.isEmpty()) {
 			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "0");
 			return null;

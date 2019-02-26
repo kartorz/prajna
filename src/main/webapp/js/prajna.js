@@ -16,10 +16,11 @@ function submitSiginForm(urlSignin){
         	return $(this).form('enableValidation').form('validate');
        	},
 		success:function(data) {
+			//alert("submitSiginForm success, return:" + data);
 			if (data == "success") {
 				$('#dlg-signin').dialog('close');
-				window.location.href = "";
-			} else { 
+				window.location.href = "/";
+			} else {
 				$('#fm-signin-info').text(data);
 			}
 	    }
