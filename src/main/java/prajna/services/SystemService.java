@@ -1,6 +1,9 @@
 package prajna.services;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,20 +30,24 @@ public class SystemService {
     public static final String  UPLOADERDIR_NAME =  "uploader";
 	public static final String  dataDir = System.getProperty("user.home") + "/.prajna";
 	public static final String  uploaderDir = dataDir + "/" + UPLOADERDIR_NAME + "/" ;
+	public static final String  edocDir = dataDir + "/edoc";
+
 	public static final int PG_SIZE = 20;
 	public static final int COMMT_PG_SIZE = 10;
-	public Path uploaderPath = null;
-    
-	@Autowired
+	public static Path uploaderPath = null;
+    public static Path edocPath = null;
+
+    @Autowired
     ServletContext context;
 	
 	@Autowired
     MessageSource messageSource;
 	
 	public SystemService() {
-		logger.info("SystemService()");
+		edocPath = createDir(edocDir);
+		logger.info("SystemService, edoc path:" + edocDir);
 	}
-
+    
 	public String getMessage(String id) {
 		Locale locale = LocaleContextHolder.getLocale();
 	    return messageSource.getMessage(id,null,locale);
@@ -53,7 +60,8 @@ public class SystemService {
     	return pgmeta;
 	}
     
-	public void deleteUploaderResDir(long resid) {
+   
+    public void deleteUploaderResDir(long resid) {
 		if (uploaderPath == null || resid == 0) 
 			return;
 		/*Path resPath = uploaderPath.resolve(String.valueOf(resid));
@@ -106,6 +114,22 @@ public class SystemService {
 		return resPath;
 	}
 	
+	
+    private Path createDir(String dir) {
+    	Path dirPath = Paths.get(dir);
+    	logger.debug("createDataDir: " + dirPath.toString());
+		
+    	try {
+			if (Files.notExists(dirPath))
+				Files.createDirectory(dirPath);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+    	
+    	return dirPath;
+	}
+	
     public static String trim(String s, int width) {
         if (s.length() > width)
             return s.substring(0, width-1) + ".";
@@ -120,7 +144,7 @@ public class SystemService {
 
     }
 
-    public static String getMd5String(String str) {
+    public static String getStrMd5(String str) {
 		try {
 	    	MessageDigest md = MessageDigest.getInstance("MD5");
 			md.update(str.getBytes());
@@ -135,5 +159,49 @@ public class SystemService {
 			e.printStackTrace();
 			return "";
 		}
-    }   
+    }
+    
+	public static String getFileMd5(String file) {
+        MessageDigest md;
+		
+        try {
+			md = MessageDigest.getInstance("MD5");
+	        FileInputStream input = new FileInputStream(file);
+	        FileChannel channel = input.getChannel();
+	        byte[] buffer = new byte[256 * 1024];
+	        ByteBuffer byteBuffer = ByteBuffer.wrap(buffer);
+	        int bytes;
+	        while ((bytes = channel.read(byteBuffer)) > 0) {
+	        	md.update(byteBuffer.array(), 0, bytes);
+	            byteBuffer.clear();
+	        }
+	    
+	        channel.close();
+	        input.close();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return "";
+		}  catch (IOException e) {
+			e.printStackTrace();
+			return "";
+		}
+
+		byte byteData[] = md.digest();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < byteData.length; i++) {
+            sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+        } 
+        return sb.toString();
+	}
+	
+
+
+	public static String getFileExtension(String name) {
+		int lastIndexOf = name.lastIndexOf(".");
+		if (lastIndexOf == -1) {
+			return ""; // empty extension
+		}
+		return name.substring(lastIndexOf);
+	}
+
 }

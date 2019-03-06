@@ -20,7 +20,8 @@ public class Doc {
 
 	public static final int BRIEF_STRLEN = 100;
 	public static final int CID_MAINPAGE = 1;
-	static public String[] CidToString = {"No Category", "主页", "编程", "Linux", "Android"};  // cid start from 1
+	static public String[] CidToString = {"No Category", "主页", "编程", "Linux", "Android", "电子文档"};  // cid start from 1
+	public static final int CID_EDOC = 5;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -125,7 +126,7 @@ public class Doc {
     public int getCid() {
         return cid;
     }
-    public void setCid(int cid) {	
+    public void setCid(int cid) {
     	category = CidToString[cid];
         this.cid = cid;
     }

@@ -1,6 +1,12 @@
 package prajna.controllers;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -21,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
 import prajna.models.*;
 import prajna.services.*;
 import prajna.repos.*;
@@ -38,7 +46,7 @@ public class DocController extends BaseController {
 	@Autowired
 	SessionService sessionService;
 	
-	@Autowired	
+	@Autowired
 	AccountService accountService;
 	
 	//@ModelAttribute("allCatetorys") 
@@ -47,6 +55,14 @@ public class DocController extends BaseController {
 		return items;
 	}
  
+	@RequestMapping(value="/doctree", method = RequestMethod.POST)
+    @ResponseBody
+    public String postDocTree(HttpServletRequest req, Model model, DocTreeItem itemBean) {
+		logger.info("itemBea:" + itemBean.getId() + " text:" + itemBean.getText());
+		docService.saveDocTree(itemBean);
+		return "success";
+	}
+
     //  '/doc/list/TV?p=1&s=20&q=score&q=mdate,desc'
     @RequestMapping( method=RequestMethod.GET, value="/doc/list/{cid}")
     public String getDocListView(Model model, Pageable page, @PathVariable("cid") int cid) {
@@ -104,7 +120,6 @@ public class DocController extends BaseController {
 		docService.saveDraft(draftBean);   
 		return "success";
     }
-
 	//
     @RequestMapping(value="/doc/{id}", method = RequestMethod.POST)
     public String postDoc(HttpServletRequest req,
@@ -125,13 +140,61 @@ public class DocController extends BaseController {
 	    return "redirect:/doc/editor/" + id;
     }
 
-    @RequestMapping(value="/doc/{id}", method = RequestMethod.GET)
-    public String getDoc(HttpServletRequest req, Model model, @PathVariable("id") int id) {
-        Doc docBean = docService.getDoc(id);
+    @RequestMapping(value="/doc/e/{id}",  method = RequestMethod.GET)
+    public void getEdoc(HttpServletRequest req, HttpServletResponse resp, Model model, @PathVariable("id") int id) {
+    	Doc docBean = docService.getDoc(id);
+    	if (docBean == null) {
+    		logger.error("getEdoc, doc id:" + id + "is non-exist");
+    		
+    		sendError(resp, "文档不存在");
+    		return;
+    	}
+    		
+    	String fileName = docBean.getText();
+    	Path docPath = SystemService.edocPath.resolve(fileName);
+    	File docFile = new File(docPath.toString());
+    	logger.info("fileName:" + fileName + ", docPath:" + docPath.toString());
+   
+    	String extName = SystemService.getFileExtension(fileName);
+    	if (extName.equalsIgnoreCase(".pdf")) {
+    		resp.setContentType("application/pdf");
+    	} else {
+    		resp.setContentType("application/octet-strea");
+    		resp.setHeader("Content-Disposition", "attachment; filename=\"demo.pdf\"");
+    	}
+    	resp.setContentLengthLong(docFile.length());
+ 
+    	InputStream inputStream = null;
+		try {
+			inputStream = new FileInputStream(docFile);
+	        int nbytes;
+	        while ((nbytes = inputStream.read()) != -1) {
+	        	resp.getWriter().write(nbytes);
+	        }
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+		    if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		    }
+		}
+    }
+    
+    @RequestMapping(value="/doc/{cid}/{id}",  method = RequestMethod.GET)
+    public String getDoc(HttpServletRequest req, Model model, @PathVariable("cid") int cid,  @PathVariable("id") int id) {
+    	if (cid == Doc.CID_EDOC)
+        	return "redirect:/doc/e/" + id;
+    	
+    	Doc docBean = docService.getDoc(id);
         if (docBean == null)
         	docBean = new Doc();
- 
-        String usr = sessionAccount(req);
+    	String usr = sessionAccount(req);
 	    model.addAttribute("login", usr);
 	    model.addAttribute("docBean", docBean);
         model.addAttribute("isOwner", accountService.canDeleteDocByUsr(usr, docBean.getAccount()));
@@ -254,5 +317,25 @@ public class DocController extends BaseController {
     	model.addAttribute("login", usr);
         model.addAttribute("comments",docService.getCommentList(did, new PageRequest(p-1, DocService.COMMT_PG_SIZE, Sort.Direction.DESC, "cdate")));
         return  "ajax/commentlist :: comment-list" ;
+    }
+    
+    
+    @RequestMapping(value="/edoc", method = RequestMethod.POST)
+    @ResponseBody
+    public String postEdoc(HttpServletRequest req, HttpServletResponse resp, Model model,
+    						@RequestParam("doc") MultipartFile doc,
+    						@RequestParam("title") String title,
+    						@RequestParam("pid")  int pid,
+    						@RequestParam("cid")  int cid) {
+    	logger.info("postEdoc: title:" + title + " pid:" + pid + " cid:" + cid);
+    	String usr = sessionAccount(req);
+	    if (!usr.isEmpty()) {
+	    	docService.uploadEdoc(usr, 0, doc, title, pid, cid);
+	    	return "success";
+	    } else {
+	    	sendError(resp, "请先登录系统");
+	    	return null;
+	    }
+
     }
 }

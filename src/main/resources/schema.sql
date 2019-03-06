@@ -25,7 +25,7 @@ create table if not exists docs(id int NOT NULL,
 				email      varchar(25),
 				category   varchar(25),
 				brief      varchar(256),
-				cid        int,
+				cid        int, /*category id*/
 				repost     bool,
 				onTop      bool,
 				score      int,
@@ -163,4 +163,19 @@ create table if not exists UserMessages(id int NOT NULL,
 				sreserve  varchar(48),
 				primary key	(id));
 
+--drop table DocTree if exists;
+create table if not exists DocTree(id int NOT NULL,
+				pid         int,            /* parent id */
+				text        varchar(64),
+				state       varchar(8),     /* open | close */
+				checked     bool, 
+				iconCls     varchar(32),    /* icon-save | icon-add | .. */
+				attributes  varchar(512),   /* "url":"/xx","price":100 */
+				dirFlag     bool,           /* true: directory */
+				
+				/* extra information  */
+				cid         int,             /* doc category id */
+				did         int,             /* doc id */
+				primary key	(id));
 
+				

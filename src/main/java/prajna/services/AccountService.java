@@ -35,7 +35,7 @@ public class AccountService {
 
 	public void saveAccount(Account usr) {
 		if (!usr.getPassword().isEmpty()) {
-			usr.setPassword(SystemService.getMd5String(usr.getPassword()));
+			usr.setPassword(SystemService.getStrMd5(usr.getPassword()));
 		} else {
 			usr.setPassword(getAccount(usr.getAccount()).getPassword());
 		}
@@ -56,7 +56,7 @@ public class AccountService {
 
 		usr.setAccount(usr.getAccount().toLowerCase());
 		if (accountRepo.findByAccount(usr.getAccount()) == null) {
-			String passMd5 = SystemService.getMd5String(usr.getPassword());
+			String passMd5 = SystemService.getStrMd5(usr.getPassword());
 			if (passMd5 != "") {
 				usr.setPassword(passMd5);
 
@@ -86,7 +86,7 @@ public class AccountService {
 
 		Account usr = accountRepo.findByAccount(account);
 		if (usr != null) {
-			String passMd5 = SystemService.getMd5String(passwd);
+			String passMd5 = SystemService.getStrMd5(passwd);
 			if (passMd5.equalsIgnoreCase(usr.getPassword()))
 				return true;
 		}
@@ -150,7 +150,7 @@ public class AccountService {
 		int ret = 0;
 		if (account != "") {
 			String passwd = Integer.toString((int)((Math.random()*9+1)*100000));
-			String passMd5 = SystemService.getMd5String(passwd);
+			String passMd5 = SystemService.getStrMd5(passwd);
 			ret = accountRepo.updatePasswordByAccount(account, passMd5);
 			if (ret > 0) {
 				emailService.resetPassword(account, passwd);
@@ -163,7 +163,7 @@ public class AccountService {
 	public boolean updatePassword(String account, String passwd) {
 		int ret = 0;
 		if (account != "") {
-			String passMd5 = SystemService.getMd5String(passwd);
+			String passMd5 = SystemService.getStrMd5(passwd);
 			ret = accountRepo.updatePasswordByAccount(account, passMd5);
 		}
 		return (ret > 0);

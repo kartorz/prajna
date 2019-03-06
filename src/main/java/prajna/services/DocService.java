@@ -1,5 +1,6 @@
 package prajna.services;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,16 +25,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import prajna.SimpleImageInfo;
 import prajna.models.Account;
 import prajna.models.Doc;
 import prajna.models.DocComment;
+import prajna.models.DocTreeItem;
 import prajna.models.Docres;
 import prajna.models.Draft;
 import prajna.repos.AccountRepo;
 import prajna.repos.DocCommentRepo;
 import prajna.repos.DocRepo;
+import prajna.repos.DocTreeRepo;
 import prajna.repos.DocresRepo;
 import prajna.repos.DraftRepo;
 import prajna.repos.projection.DocOpaque;
@@ -53,8 +57,11 @@ public class DocService {
 	@Autowired AccountRepo  accountRepo;
 	@Autowired DocresRepo  docresRepo;
 	@Autowired DocCommentRepo docCommentRepo;
-	
+	@Autowired DocTreeRepo  docTreeRepo;
+
 	@Autowired SystemService  systemService;
+	
+	private DocTreeItem rootDocTree = null;
 	
 	public DocService() {
 		//logger.info("DocService()");
@@ -73,6 +80,30 @@ public class DocService {
 			return pgmeta;
 		}
 		return null;
+	}
+
+	public DocTreeItem getDocTree() {
+		if (rootDocTree != null) {
+			return rootDocTree;
+		}
+		rootDocTree = new DocTreeItem(0, 0);
+
+		getDocTree(rootDocTree);
+
+		return rootDocTree;
+	}
+
+	private void getDocTree(DocTreeItem parent) {
+		parent.setChildren( docTreeRepo.findByPid(parent.getId()) );
+		for (DocTreeItem child: parent.getChildren()) {
+			logger.info("getDocTree (" + child.getId() + "-->" + child.getPid() + ")");
+			getDocTree(child);
+		}
+	}
+	
+	public DocTreeItem saveDocTree(DocTreeItem docTreeItem) {
+		rootDocTree = null;
+		return docTreeRepo.save(docTreeItem);
 	}
 
 	public List<Doc> getDocList(int cid, Pageable pageable) {
@@ -354,5 +385,59 @@ public class DocService {
 	
 	public int deleteDocComment(int id, String account){
 		return docCommentRepo.deleteByIdAndAccount(id, account);
+	}
+	
+	public void uploadEdoc(String account, int id, MultipartFile file, String title, int pid, int cid) {
+		String fileMd5Name = "";
+		String fileName = "";
+		try {
+			if (!file.isEmpty()) {
+				fileName = file.getOriginalFilename();
+				String extName = SystemService.getFileExtension(fileName);
+			
+				Path tempFile = SystemService.edocPath.resolve("file.tmp");
+			   
+			    Files.copy(file.getInputStream(), tempFile,
+			    		StandardCopyOption.REPLACE_EXISTING);
+			        
+			    fileMd5Name = SystemService.getFileMd5(tempFile.toString()) + extName;
+			    Path targetPath = SystemService.edocPath.resolve(fileMd5Name);
+			    if (Files.notExists(targetPath)) {
+			    	Files.move(tempFile, targetPath, StandardCopyOption.ATOMIC_MOVE);
+			    }
+			    
+				logger.info("fileName:" + fileName + " tempFile:" + tempFile + " fileMd5:" + fileMd5Name + " targetPath:" + targetPath);
+			} else {
+				logger.info("The file is empty");
+			}
+		} catch (IOException e) {
+			logger.error(e.toString());
+			return;
+		}
+		
+		if (title.isEmpty())
+			title = fileName;
+		
+		// Save to docs table
+		Doc doc = new Doc();
+		doc.setCid(cid);
+		doc.setAccount(account);
+		Account usr = accountRepo.findByAccount(account);
+		if (usr != null) {
+			doc.setAuthor(usr.getName());
+			doc.setEmail(usr.getEmail());
+		}
+	
+		doc.setText(fileMd5Name);
+		doc.setTitle(title);
+		doc = docRepo.save(doc);
+		
+		DocTreeItem treeItem = new DocTreeItem(id, pid, fileName);
+		treeItem.setDid(doc.getId());
+		treeItem.setCid(doc.getCid());
+		treeItem.setDirFlag(false);
+		docTreeRepo.save(treeItem);
+		
+		rootDocTree = null;
 	}
 }

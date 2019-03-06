@@ -1,6 +1,8 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="common :: header(~{}, ~{::style}, ~{::script})">
+<head th:replace="common :: header(~{::link}, ~{::style}, ~{::script})">
+  
+  <link rel="stylesheet" type="text/css" th:href="@{/css/page.css}"/> 
   <script type="text/javascript" th:src="@{js/jquery.easyui.min.js}"></script>
   
   <style type="text/css">
@@ -22,42 +24,19 @@
 		font-size:16px;
 		font-weight:bold;
 	}
- 
-  	#pg_left {
-  		float:left;
-  		border:1px;
-  		width:15%;
-  		/*background:#FF0000;*/
-  		height:90%;
-  	}
-  
-  	#pg_center {
-  		display: inline-block;
-  		width:50%;
-  		height:90%;
-  		/*background:#00FFF0;*/
-  		position:relative;
-  		margin-left:20px;
-  	}
-   	#pg_right {
-  		float:right;
-  		width:20%;
-  		height:90%;
-  		/*background:#0888F0;*/
-  		margin-left: 40px;
-  	}
   </style>
 </head>
 
 <body>
   <h2 style="text-align:center">般若-程序禅 管理员界面</h2>
-  
+ 
   <div class="easyui-panel" style="padding:5px;">
     <a th:href="@{/}" class="easyui-linkbutton big-btn" data-options="plain:true">首页</a>
     <a href="#" class="easyui-menubutton big-btn" data-options="menu:'#mm1'">文档管理</a>
     <a href="#" class="easyui-menubutton big-btn" data-options="menu:'#mm2'">帐号维护</a>
     <a href="#" class="easyui-menubutton big-btn" data-options="menu:'#mm3'">评论维护</a>
   </div>
+  
   <div id="mm1" style="width:150px;">
     <div><a th:href="@{/doc/editor/0}">写文档</a></div>
     <div class="menu-sep"></div>
@@ -65,18 +44,123 @@
   </div>
   <div id="mm2" style="width:100px;">
   </div>
+  <div id="mm3" style="width:100px;">
+  </div>
  
   <div id="pg_left">
   </div>
   
   <div id="pg_center">
+    <div id="p" class="easyui-panel" title="Basic Panel" style="width:800px;height:600px;padding:10px;">
+      <div style="margin:20px 0;">
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="add()">Add</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="edit()">Edit</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="save()">Save</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="cancel()">Cancel</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="delete()">Delete</a>
+      </div>
+      <table id="tg-doctree" class="easyui-treegrid" title="文档树目录维护" style="width:700px;height:450px"
+            data-options="
+                rownumbers: true,
+                animate: true,
+                fitColumns: true,
+                url: 'doctree.json',
+                method: 'get',
+                idField: 'id',
+                treeField: 'text'
+                ">
+         <thead>
+            <tr>
+                <th data-options="field:'text',width:120,align:'right',editor:'text'">Text</th>
+                <th data-options="field:'id',width:30,editor:'numberbox'">ID</th>
+                <th data-options="field:'pid',width:80,editor:'numberbox'">ParentID</th>
+                <th data-options="field:'state',width:60,editor:'combobox'">State</th>
+                <th data-options="field:'checked',width:60,editor:'combobox'">Checked</th>
+                <th data-options="field:'iconCls',width:60,editor:'combobox'">IconCls</th>
+                <th data-options="field:'attributes',width:240,editor:'text'">Attributes</th>
+            </tr>
+        </thead>
+      </table>
+    </div>
   </div>
  
   <div id="pg_right">
   </div>
   
-  <script>
-  </script>
+  <script type="text/javascript" th:inline="javascript">
+  	var editingId = undefined;
 
+  	function add() {
+  		
+  	     /*if (editingId != null){
+             $.messager.alert("提示信息", "请先保存");
+             return;
+         }*/
+  	     
+  		var pid;
+  		var parent;
+    	var node = $('#tg-doctree').treegrid('getSelected');
+    	if (node == undefined) {
+    		parent = undefined;
+    		pid = 0;
+    		console.log("{add}: append to root directory");
+    		//id = $('#tg-doctree').treegrid('getRoots').length + 1;
+    	} else {
+    		parent = pid = node.id;
+			//var children = $('#tg-doctree').treegrid('getChildren', pid);
+			console.log("{add}: append to " + pid);
+		}
+
+    	var newNode = $('#tg-doctree').treegrid('append',{
+    		parent: parent,  // the node has a 'id' value that defined through 'idField' property
+    		data: [{
+    			id: 0,
+    			pid: pid,
+    			text: 'name'
+    		}]
+    	});
+
+    	editingId = 0;
+        $('#tg-doctree').treegrid('select', editingId)
+        				.treegrid('beginEdit', editingId);
+    }
+
+  	function edit() {
+    	if (editingId != undefined){
+    		console.log("{edit}: has selected a item: editingId :" + row.id);
+            $('#tg-doctree').treegrid('select', editingId);
+            return;
+        }
+        var row = $('#tg-doctree').treegrid('getSelected');
+        if (row) {
+        	console.log("{edit}: id:" + row.id);
+            editingId = row.id
+            $('#tg-doctree').treegrid('beginEdit', editingId);
+        }
+    }
+    
+    function save() {
+    	if (editingId != undefined) {
+    		var t = $('#tg-doctree');
+            t.treegrid('endEdit', editingId);
+            var nodeObj = $('#tg-doctree').treegrid('find', editingId);
+            //var postData = JSON.stringify(nodeObj);
+            //console.log("{save}: post node data:" + postData);
+            editingId = undefined;
+ 
+            $.ajax({
+	            type: "POST",
+	            url: [[@{/doctree}]],
+	            data: nodeObj,
+	            success: function(response) {
+	            	$('#tg-doctree').treegrid('reload');
+	            },
+	            error: function(jqXHR, textStatus, errorThrown) {
+					alert(getErrMessage(parseInt(errorThrown)));
+				}
+	        });
+  		}
+    }
+  </script>
 </body>
 </html>

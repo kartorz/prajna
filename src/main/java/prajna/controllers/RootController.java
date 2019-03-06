@@ -1,5 +1,6 @@
 package prajna.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -53,6 +54,12 @@ public class RootController extends BaseController {
         return "index";
     }
 
+    @RequestMapping(value = "/doctree.json", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    public List<DocTreeItem> getDocTreeJson() {
+    	return docService.getDocTree().getChildren();
+    }
+    
     @RequestMapping(value = "/menutree", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     public String getMenuTreeJson() {

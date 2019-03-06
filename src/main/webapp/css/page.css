@@ -1,0 +1,33 @@
+@CHARSET "UTF-8";
+
+#pg_left {
+	float:left;
+ 	border:1px;
+	width:23%;
+	/*background:#FF0000;*/
+  	height:90%;
+}
+
+#pg_center {
+	display: inline-block;
+	width:50%;
+	height:90%;
+  	/*background:#FFFFFF;*/
+  	/*position:relative;*/
+  	/*margin-left:20px;*/
+}
+
+#pg_right {
+  	float:right;
+  	width:25%;
+  	height:90%;
+  	/*background:#0888F0;*/
+  	/*margin-left: 40px;*/
+}
+
+#doclist-pgination-bar {
+	/*position:absolute;*/
+  	/*bottom:0;*/
+  	width:auto;
+  	margin-top:20px;
+}

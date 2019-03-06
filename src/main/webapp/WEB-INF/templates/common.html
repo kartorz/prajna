@@ -28,6 +28,8 @@
   <li><a th:href="@{/?cid=2}">编程</a></li>
   <li><a th:href="@{/?cid=3}">LINUX</a></li>
   <li><a th:href="@{/?cid=4}">Android</a></li>
+  <!-- <li><a th:href="@{/?cid=9}">电子文档</a></li> -->
+
   <!-- <li><a th:href="@{/discuss}">论道</a></li> -->
   <li><a th:href="@{/about}">关于本站</a></li>
   <li th:if="${login == null || login == ''}"><a href="javascript:void(0)" onClick="onSignInClick(this);">登录</a></li>
@@ -35,6 +37,12 @@
   <li th:if="${login != null && login != ''}"><a th:href="@{/signout}">退出</a></li>
   <li th:if="${login != null && login != ''}"><a th:href="@{/account/info}" th:text="${login}"></a></li>
 </ul>
+
+<div th:fragment="doctree" style="text-align:center; width:80%; height:100%; margin-left:8px; margin-top:10px;">
+  <div class="easyui-panel" style="padding:5px; height:100%;">
+    <ul id="doctree" class="easyui-tree" style="width:100%" th:attr="data-options='url:\'' + @{/doctree.json}  + '\',method:\'get\''"></ul>
+  </div>
+</div>
 
 <div id="footer" th:fragment="footer" style="text-align:center; width:100%; margin-top:60px;">
   <div style="display: inline-block; text-align:left; vertical-align: top;">
@@ -74,6 +82,30 @@
     <a th:href="@{/signup}" class="easyui-linkbutton" style="width:80px">注册</a>
     <a th:href="@{/signup?tab=1}" class="easyui-linkbutton" style="width:80px">忘记密码</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" th:onclick="|submitSiginForm('@{/signin}')|" style="width:80px; margin-left:70px">登录</a>
+  </div>
+</div>
+
+<div th:fragment="uploaddoc-dialog" id="dlg-uploaddoc" class="easyui-dialog" title="上传文档"
+    style="width:480px;height:320px;padding:40px" data-options="modal:true, border:'thin'" closed="true">
+  <form id="fm-uploaddoc" class="easyui-form" action="#" method="post" enctype="multipart/form-data" data-options="novalidate:true">
+    <div style="margin-bottom:20px">
+      <input class="easyui-filebox" name="doc" label="文档:" labelPosition="top" data-options="prompt:'选择文档...'" style="width:100%">
+    </div>
+    <div style="margin-bottom:20px">
+      <input class="easyui-textbox" name="title" style="width:100%" data-options="label:'标题:(为空使用文件名)'">
+    </div>
+   
+    <div style="margin-bottom:20px">
+      <input type="hidden" name="cid" value="9">
+    </div>
+    
+    <div style="margin-bottom:20px">
+      <input id="ct-edoc" class="easyui-combotree" style="width:100%" 
+        th:attr="data-options='url:\'' + @{/doctree.json} + '\',method:\'get\',label:\'选择文件目录:（为空是根目录）\',labelPosition:\'top\',editable:true'">
+    </div>
+  </form>
+  <div style="text-align:center;padding:5px 0">
+    <a href="javascript:void(0)" class="easyui-linkbutton" th:onclick="|submitUploadDocForm('@{/edoc}')|" style="width:80px">上传</a>
   </div>
 </div>
 

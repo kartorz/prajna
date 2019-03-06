@@ -1,52 +1,24 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="common :: header(~{}, ~{::style}, ~{::script})">
+<head th:replace="common :: header(~{::link}, ~{}, ~{::script})">
   <meta name="keywords" content="般若-程序蝉 LINUX 编程"/>
   <meta name="Description" content="般若-程序蝉 程序设计博客网站"/>
-
+ 
+  <link rel="stylesheet" type="text/css" th:href="@{/css/page.css}"/>
+ 
   <script type="text/javascript" th:src="@{js/jquery.easyui.min.js}"></script> 
-  
-  <style type="text/css">
-  	#pg_left {
-  		float:left;
-  		border:1px;
-  		width:23%;
-  		/*background:#FF0000;*/
-  		height:90%;
-  	}
-  	#pg_center {
-  		display: inline-block;
-  		width:50%;
-  		height:90%;
-  		/*background:#FFFFFF;*/
-  		/*position:relative;*/
-  		/*margin-left:20px;*/
-  	}
-   	#pg_right {
-  		float:right;
-  		width:25%;
-  		height:90%;
-  		/*background:#0888F0;*/
-  		/*margin-left: 40px;*/
-  	}
-  	#doclist-pgination-bar {
-  		/*position:absolute;
-  		bottom:0;*/
-  		width:auto;
-  		margin-top:20px;
-  	}
-  </style>
+
 </head>
 
 <body>
   <ul th:replace="common :: nav"></ul>
-  
+
   <div id="pg_left">
-  <!-- 
-  	<div style="margin:40px 0;"></div>
-  	<ul id="left-menu" class="easyui-tree" style="width:50%" th:attr="data-options='url:\'' + @{/menutree}  + '\',method:\'get\''"></ul>
-  -->
+    <th:block th:if="${(param.cid != null) and (param.cid[0] == '9')}">
+      <div th:replace="common :: doctree"> </div>
+    <th:block>
   </div>
+
   
   <div id="pg_center">
   	<div th:replace="ajax/doclist :: doc-list"> </div>
@@ -62,6 +34,8 @@
 
   <div th:replace="common :: signin-dialog"> </div>
 
+  <div th:replace="common :: uploaddoc-dialog"> </div>
+
   <script>
   	/*$('#left-menu').tree({
   		onClick: function(node){
@@ -75,6 +49,13 @@
   	        });
   		}
   	});*/
+  	
+  	$('#doctree').tree({
+  		onClick: function(node){
+  			url = [[@{/doc/}]] + node.cid + '/' + node.did;
+  			window.location.href = url;
+  		}
+  	});
   	
   	$('#doclist-pgination').pagination({
   		onSelectPage:function(pageNumber, pageSize){

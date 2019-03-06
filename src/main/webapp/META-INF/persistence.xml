@@ -19,7 +19,8 @@
          	<class>prajna.models.QuestionAnswer</class>
          	<class>prajna.models.QuestionTag</class>
          	<class>prajna.models.TagItem</class>
-         	<class>prajna.models.UserMessage</class>      	         	
+         	<class>prajna.models.UserMessage</class>
+         	<class>prajna.models.DocTreeItem</class>
         <properties>
 
             <property name="javax.persistence.jdbc.driver"

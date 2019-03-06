@@ -29,8 +29,38 @@ function submitSiginForm(urlSignin){
 function onSignInClick(e, signin) {
 	//document.getElementById("demo").style.color = "red";
 	//if ($('#dlg-signin').prop("closed"))
+	console.log("onSignInClick");
 	$('#dlg-signin').dialog('open');
 	$('#dlg-signin').dialog('vcenter');
+}
+
+function onUploadDocClick(e) {
+	//document.getElementById("demo").style.color = "red";
+	//if ($('#dlg-signin').prop("closed"))
+	console.log("onUploadDocClick");
+	$('#dlg-uploaddoc').dialog('open');
+	$('#dlg-uploaddoc').dialog('vcenter');
+}
+
+function submitUploadDocForm(url) {
+	var t = $('#ct-edoc').combotree('tree');
+	var n = t.tree('getSelected');
+	var pid = 0;
+	if (n != undefined) {
+		pid = n.id;
+	}
+	
+	$('#fm-uploaddoc').form({
+	    url:url,
+	    onSubmit: function(param){
+	    	param.pid = pid;
+	    },
+	    success:function(data){
+	    	$('#dlg-uploaddoc').dialog('close');
+	    	window.location.href = "";
+	    }
+	});
+	$('#fm-uploaddoc').submit();
 }
 
 function setupCommtlistPagination(url) {
