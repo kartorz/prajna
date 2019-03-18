@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common :: header(~{::link}, ~{::style}, ~{::script})">
+  <script type="text/javascript" th:src="@{js/jquery.easyui.min.js}"></script>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/page.css}"/>
+  
+  <style type="text/css">
+    *.icon-folder {
+      background: url('css/easyui/themes/material/images/tree_icons.png') no-repeat -208px 0;
+    }
+  </style>
+</head>
+
+<body>
+  
+  <ul th:replace="common :: nav"></ul>
+
+  <div id="pg_left" style="text-align:center;">
+    <div class="easyui-panel" title="文件夹目录" style="width:90%;height:100%;padding:10px;">
+      <ul id="foldertree" class="easyui-tree" data-options="cascadeCheck:false," style="width:100%"></ul>
+    </div>
+  </div> 
+
+  <div id="pg_center">
+    <table id="filelist" title="文件" class="easyui-datagrid" style="width:100%;height:100%" data-options="
+               rownumbers:true, idField:'text',autoRowHeight:false,fitColumns:true,singleSelect:true, pageSize:30">
+      <thead>
+        <tr>
+          <th field="text"  width="75%" >文件名</th>
+          <th field="size"  width="10%" align="right">大小</th>
+          <th field="mdate" width="15%" align="center">日期</th>
+        </tr>
+      </thead>
+    </table>  
+  </div>
+  
+  <div id="pg_right">
+  </div>
+
+  <script type="text/javascript" th:inline="javascript">
+    $('#filelist').datagrid({
+    	url: [[@{filebrowser/f}]],
+    	method: 'get',
+    	onDblClickRow: function(index, row){
+    		if (row){
+    		    //alert('text:'+row.text+"\nPath:"+row.path);
+      			url = [[@{/filebrowser/f}]]  + row.path;
+      			//window.location.href = url;
+      			window.open(url);
+    		}
+    	}
+    });
+ 
+    $('#foldertree').tree({
+    	url: [[@{/filebrowser/foldertree.json}]],
+    	method:'get',
+  		onLoadSuccess:function(){
+  			var node = $(this).tree('find', 1);
+  			if (node){
+  				$(this).tree('select', node.target);
+  			}
+  		},
+  		onClick: function(node){
+        	$('#filelist').datagrid({
+          		url:[[@{/filebrowser/f}]] + node.path,
+        		method: 'get'
+            });
+  		}
+  	});
+  </script>
+</body>
+</html>

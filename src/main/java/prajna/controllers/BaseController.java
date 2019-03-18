@@ -1,6 +1,9 @@
 package prajna.controllers;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,6 +55,65 @@ public class BaseController {
 		}
 	}
 
+	public static void responseFile(HttpServletResponse resp, String filePath) {
+		logger.debug("{responseFile}: filePath:" + filePath);
+		File file = new File(filePath);
+		String extName = SystemService.getFileExtension(filePath);
+    	if (extName.equalsIgnoreCase(".pdf")) {
+    		resp.setContentType("application/pdf");
+    	} else if(extName.equalsIgnoreCase(".doc")) {
+    		resp.setContentType("application/msword");
+    	} else if(extName.equalsIgnoreCase(".docx")) {
+    		resp.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+      	} else if(extName.equalsIgnoreCase(".ppt")) {
+    		resp.setContentType("application/vnd.ms-powerpoint");
+      	} else if(extName.equalsIgnoreCase(".pptx")) {
+    		resp.setContentType("application/vnd.openxmlformats-officedocument.presentationml.presentation");
+      	} else if(extName.equalsIgnoreCase(".xls")) {
+    		resp.setContentType("application/vnd.ms-excel");
+      	} else if(extName.equalsIgnoreCase(".xlsx")) {
+    		resp.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+      	} else if(extName.equalsIgnoreCase(".vsd")) {
+    		resp.setContentType("application/vnd.visio");
+      	} else if(extName.equalsIgnoreCase(".odp")) {
+    		resp.setContentType("application/vnd.oasis.opendocument.presentation");
+    	} else if(extName.equalsIgnoreCase(".ods")) {
+    		resp.setContentType("application/vnd.oasis.opendocument.spreadsheet");
+    	} else if(extName.equalsIgnoreCase(".odt")) {
+    		resp.setContentType("application/vnd.oasis.opendocument.text");
+    	} else if(extName.equalsIgnoreCase(".txt")) {
+    		resp.setContentType("text/plain");
+    	} else if(extName.equalsIgnoreCase(".epub")) {
+    		resp.setContentType("application/epub+zip");
+    	} else {
+    		resp.setContentType("application/octet-strea");
+    		//resp.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+    	}
+    	resp.setContentLength((int)file.length());
+    	//logger.info("{responseFile}, file length:" + file.length());
+    	InputStream inputStream = null;
+		try {
+			inputStream = new FileInputStream(file);
+	        int nbytes;
+	        while ((nbytes = inputStream.read()) != -1) {
+	        	resp.getWriter().write(nbytes);
+	        }
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			logger.error("{responseFile}, can't read file:" + filePath);
+		}finally {
+		    if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		    }
+		}
+	}
+	
 	public static void sendError(HttpServletResponse resp, String message) {
 		resp.setContentType("text/html; charset=UTF-8");
     	try {
