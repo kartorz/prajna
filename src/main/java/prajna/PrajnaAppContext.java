@@ -108,10 +108,15 @@ public class PrajnaAppContext {
 	
 	@Bean
 	public MailSender mailSender() {
-	    //Properties prop = new Properties();
-	    //prop.setProperty("mail.smtp.timeout", "30000");
+	    //Properties props = new Properties();
+	    //props.put("mail.smtp.starttls.enable", "true");
 	    
-		JavaMailSenderImpl senderImpl = new JavaMailSenderImpl();
-		return senderImpl;
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+		mailSender.setHost("smtp.office365.com");
+		mailSender.setPort(587);
+		mailSender.setUsername(EmailFrom);
+		mailSender.setPassword("xxxxxxx");
+		mailSender.getJavaMailProperties().put("mail.smtp.starttls.enable", "true");
+		return mailSender;
 	}
 }
