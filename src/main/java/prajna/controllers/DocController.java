@@ -182,6 +182,7 @@ public class DocController extends BaseController {
             docBean = new Doc();
 
         String usr = sessionAccount();
+        model.addAttribute("canEdit", isAdmin());
         model.addAttribute("login", usr);
         model.addAttribute("docBean", docBean);
         model.addAttribute("isOwner", accountService.canDeleteDocByUsr(usr, docBean.getAccount()));
@@ -234,6 +235,7 @@ public class DocController extends BaseController {
     	//logger.info("sort:" + page.getSort().toString());
    
     	model.addAttribute("login",  sessionAccount());
+    	model.addAttribute("canEdit", isAdmin());
         model.addAttribute("comments",docService.getCommentList(did, page));
         return  "ajax/commentlist :: comment-list" ;
     }
@@ -252,6 +254,7 @@ public class DocController extends BaseController {
     	docComment.setAuthor(accountService.getAccount(usr).getName());
 
     	if (text.length() <= DocComment.LEN_TEXT && docService.saveDocComment(docComment)) {
+    		model.addAttribute("canEdit", isAdmin());
     		model.addAttribute("login", usr);
     		model.addAttribute("comments",docService.getCommentList(did, new PageRequest(0, DocService.COMMT_PG_SIZE, Sort.Direction.DESC, "cdate")));
     		return  "ajax/commentlist :: comment-list" ;
@@ -288,6 +291,7 @@ public class DocController extends BaseController {
     	String usr = sessionAccount();
 	    docService.deleteDocComment(id, usr);
 	    
+	    model.addAttribute("canEdit", isAdmin());
     	model.addAttribute("login", usr);
         model.addAttribute("comments",docService.getCommentList(did, new PageRequest(p-1, DocService.COMMT_PG_SIZE, Sort.Direction.DESC, "cdate")));
         return  "ajax/commentlist :: comment-list" ;

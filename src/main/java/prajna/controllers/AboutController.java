@@ -33,7 +33,8 @@ public class AboutController extends BaseController {
 
     @RequestMapping(value="/about", method = RequestMethod.GET)
     public String getAbout(HttpServletRequest req, Model model) {
-    	model.addAttribute("login", req.getSession().getAttribute("account"));
+    	model.addAttribute("canEdit", isAdmin());
+    	model.addAttribute("login", sessionAccount());
     	model.addAttribute("commentPgMeta", usrMsgService.getCommentPgMetaJson());
         model.addAttribute("comments",usrMsgService.retrieveMessages(
         		new PageRequest(0, SystemService.PG_SIZE, Sort.Direction.DESC, "cdate")));
@@ -47,7 +48,8 @@ public class AboutController extends BaseController {
     							Model model,
     							Pageable page,
     							@RequestParam("did") int did) {
-    	//logger.info("getMessages");
+    	//logger.info("getMessages, isAdmin:" + isAdmin());
+    	model.addAttribute("canEdit", isAdmin());
     	model.addAttribute("login", sessionAccount());
         model.addAttribute("comments",usrMsgService.retrieveMessages(page));
         return  "ajax/commentlist :: comment-list" ;
@@ -62,12 +64,17 @@ public class AboutController extends BaseController {
     	String usr = sessionAccount();
     	UserMessage msgBean = new UserMessage();
     	msgBean.setText(text);
-    	msgBean.setAccount(usr);
-    	msgBean.setAuthor(accountService.getAccount(usr).getName());
-
+    	if (usr == "") {
+    		msgBean.setAccount("匿名用户");
+    		msgBean.setAuthor("匿名用户");
+    	} else {
+    		msgBean.setAccount(usr);
+    		msgBean.setAuthor(accountService.getAccount(usr).getName());
+    	}
     	if (text.length() <= UserMessage.LEN_TEXT) {
     		usrMsgService.saveMessage(msgBean);
 
+    		model.addAttribute("canEdit", isAdmin());
     		model.addAttribute("login", usr);
     		model.addAttribute("comments",usrMsgService.retrieveMessages(
     						new PageRequest(0, SystemService.PG_SIZE, Sort.Direction.DESC, "cdate")));
@@ -87,9 +94,9 @@ public class AboutController extends BaseController {
     							@RequestParam("value") String text) {
     	
     	//logger.info("putMessage");
-    	String usr = sessionAccount();
-	    if (text.length() <= UserMessage.LEN_TEXT && usrMsgService.updateMessage(id, usr, text) > 0) {
-	    	return "";
+	    if (text.length() <= UserMessage.LEN_TEXT ) {
+		    usrMsgService.updateMessage(id, text);
+		    return "";
 	    }
 	    return systemService.getMessage("input.oversize");
     }
@@ -102,8 +109,9 @@ public class AboutController extends BaseController {
     								@RequestParam("p") int p) {
     	//logger.info("deleteMessage");
     	String usr = sessionAccount();
-    	usrMsgService.deleteMessage(id, usr);
+    	usrMsgService.deleteMessage(id);
 	    
+    	model.addAttribute("canEdit", isAdmin());
     	model.addAttribute("login", usr);
 		model.addAttribute("comments",usrMsgService.retrieveMessages(
 				new PageRequest(0, SystemService.PG_SIZE, Sort.Direction.DESC, "cdate")));

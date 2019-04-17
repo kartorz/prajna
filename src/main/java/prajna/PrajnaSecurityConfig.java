@@ -57,6 +57,8 @@ public class PrajnaSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers(HttpMethod.GET, "/doc/**").permitAll()
 			.antMatchers("/doc/**").hasRole("USER")
 			.antMatchers(HttpMethod.POST,"/account").hasRole("USER")
+			.antMatchers(HttpMethod.PUT,"/about/message/**").hasRole("ADMIN")
+			.antMatchers(HttpMethod.DELETE,"/about/message/**").hasRole("ADMIN")
 			//.antMatchers("/doc/comment/*").hasRole("USER")
 			.and().formLogin().loginPage("/signin").successForwardUrl("/signin/success")
 							  .usernameParameter("account")

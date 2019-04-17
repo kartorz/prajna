@@ -10,8 +10,11 @@ import prajna.models.UserMessage;
 public interface UserMessageRepo  extends PagingAndSortingRepository<UserMessage, Integer> {
 	@Transactional
 	@Modifying
-	@Query("UPDATE UserMessages m SET m.text = ?3 WHERE m.id = ?1 AND m.account = ?2")
-	int updateTextById(int id, String account, String text);
+	@Query("UPDATE UserMessages m SET m.text = ?2 WHERE m.id = ?1")
+	int updateTextById(int id, String text);
 	
 	@Transactional int deleteByIdAndAccount(int id, String account);
+
+	@Transactional
+	int deleteById(int id);
 }

@@ -36,16 +36,16 @@ public class UserMessageService {
 		return ret;
 	}
 	
-	public int updateMessage(int id, String account, String text) {
+	public int updateMessage(int id, String text) {
 		try {
-			return usrMessageRepo.updateTextById(id, account, text);
+			return usrMessageRepo.updateTextById(id, text);
 		} catch (Exception e) {
 			return -1;
 		}
 	}
 	
-	public int deleteMessage(int id, String account){
-		return usrMessageRepo.deleteByIdAndAccount(id, account);
+	public int deleteMessage(int id){
+		return usrMessageRepo.deleteById(id);
 	}
 	
 	public UserMessage saveMessage(UserMessage msgBean) {
