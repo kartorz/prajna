@@ -47,13 +47,14 @@ public class BaseController {
 	}
 	
 	public boolean isAdmin() {
-		UserDetails principal = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
- 
-		for (GrantedAuthority role : principal.getAuthorities()) {
-			if (role.getAuthority().equalsIgnoreCase("ROLE_ADMIN"))
-				return true;
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if (principal instanceof UserDetails) {
+			UserDetails usr = (UserDetails)principal;
+			for (GrantedAuthority role : usr.getAuthorities()) {
+				if (role.getAuthority().equalsIgnoreCase("ROLE_ADMIN"))
+					return true;
+			}
 		}
-  
 		return false;
 	}
 
