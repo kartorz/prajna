@@ -32,7 +32,7 @@ public class EmailService {
 		msg.setText(content);
 
 		sendMessage(msg);
-		logger.info("resetPassword: send email to " + addr + " passwd:" + passwd);
+		//logger.info("resetPassword: send email to " + addr + " passwd:" + passwd);
 	}
 
 	public void invateAnswer(String inviter, String  invitee, String url) {

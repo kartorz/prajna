@@ -153,14 +153,14 @@ public class AccountService  {
 		return usr;
 	}
 
-	public boolean resetPassword(String account) {
+	public boolean resetPassword(String email) {
 		int ret = 0;
-		if (account != "") {
+		if (email != "") {
 			String passwd = Integer.toString((int)((Math.random()*9+1)*100000));
 			String passEncoder = passwordEncoder.encode(passwd);
-			ret = accountRepo.updatePasswordByAccount(account, passEncoder);
+			ret = accountRepo.updatePasswordByEmail(email, passEncoder);
 			if (ret > 0) {
-				emailService.resetPassword(account, passwd);
+				emailService.resetPassword(email, passwd);
 			}
 		}
 		//logger.info("resetPassword: account:" + account);

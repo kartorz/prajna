@@ -19,4 +19,9 @@ public interface AccountRepo extends CrudRepository<Account, String> {
 	@Modifying
 	@Query("UPDATE Accounts ac SET ac.password = ?2 WHERE ac.account = ?1")
 	int updatePasswordByAccount(String account, String passwd);
+	
+	@Transactional
+	@Modifying
+	@Query("UPDATE Accounts ac SET ac.password = ?2 WHERE ac.email = ?1")
+	int updatePasswordByEmail(String email, String passwd);
 }

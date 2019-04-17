@@ -102,8 +102,8 @@
 
 	 <div title="密码重置" style="padding:10px">
        <form th:action="@{/signin/reset-password}" method="get" style="margin:60px 0 0 30px">
-         <label>输入邮箱帐号:</label>
-         <input type="text" name="account" th:value="${account}" style="margin:20px"/> <span th:text="${err}" style="color:red"> </span>
+         <label>输入邮箱:</label>
+         <input type="text" name="email" th:value="${email}" style="margin:20px"/> <span th:text="${err}" style="color:red"> </span>
          <p style="margin:20px 0 20px 0">点击”找回“按钮，密码会重置，并发送到您的邮箱</p>
          <input type="submit" value="找回" style="margin-left:180px" />
        </form>

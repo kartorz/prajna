@@ -70,15 +70,14 @@ public class AccountController extends BaseController {
     }
 
     @RequestMapping("/signin/reset-password")
-    public String resetPassword(HttpServletRequest req, Model model,
-    							@RequestParam("account") String account) {
-    	if (accountService.resetPassword(account)) {
+    public String resetPassword(HttpServletRequest req, Model model, @RequestParam("email") String email) {
+    	if (accountService.resetPassword(email)) {
     		return "redirect:/";
     	}
 
     	model.addAttribute("usr", new Account());
-		model.addAttribute("account", account);
-		model.addAttribute("tabinx", 0);
+		model.addAttribute("email", email);
+		model.addAttribute("tabinx", 2);
 		model.addAttribute("err", systemService.getMessage("account.nonexist"));
     	return "login";
     }
